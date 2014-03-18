@@ -3,6 +3,9 @@ Created on 18/03/2014
 
 @author: jacekrad
 '''
+
+import random
+
 boolean = False
 boolean = not(boolean)
 
@@ -37,7 +40,9 @@ for item in some_list:
     
 print some_tuple
 
-for i,c in [[1, 'I'], [2, 'II'], [3, 'III']]:
+for i, c in [[1, 'I'], [2, 'II'], [3, 'III']]:
     print i, c
     
-    
+some_dictionary = {'a':1, 'b':2}
+
+list_comprehension = [random.randint(0, 3) for i in range(100)]
