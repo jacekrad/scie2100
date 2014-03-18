@@ -43,6 +43,13 @@ print some_tuple
 for i, c in [[1, 'I'], [2, 'II'], [3, 'III']]:
     print i, c
     
-some_dictionary = {'a':1, 'b':2}
+some_dictionary = {'a':1, 'b':2, 'c':3}
 
 list_comprehension = [random.randint(0, 3) for i in range(100)]
+
+print some_dictionary.get('b'), ' is the item with a key of b'
+
+def some_function(some_var):
+    return some_var + 1
+
+print some_function(12)
