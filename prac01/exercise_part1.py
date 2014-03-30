@@ -27,13 +27,13 @@ print rns1.count('S')
 
 #
 
-q5_ids = seq.searchSequences("signal+peptide+AND+organism:Arabidopsis+thaliana[3702]+AND+length:[100+TO+*]")
+ex5_ids = seq.searchSequences("signal+peptide+AND+organism:Arabidopsis+thaliana[3702]+AND+length:[100+TO+*]")
 id6 = seq.searchSequences("Lipid+metabolism+AND+organism:3702+AND+fragment:no+AND+length:[100+TO+*]")
 
-print "ID5: ", q5_ids.__len__(), " ID6: ", id6.__len__()
+print "ID5: ", ex5_ids.__len__(), " ID6: ", id6.__len__()
 
 to_be_written = []
-ids = set(q5_ids).intersection(set(id6))
+ids = set(ex5_ids).intersection(set(id6))
 
 print ids.__len__()
 for i in ids:

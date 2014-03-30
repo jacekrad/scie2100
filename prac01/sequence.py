@@ -250,18 +250,18 @@ def readFastaFile(filename, alphabet = None):
     fh.close()
     return seqlist
 
-def writeFastaFile(filename, seqs):
+def writeFastaFile(filename, sequences):
     """ Write the specified sequences to a FASTA file. """
     fh = open(filename, 'w')
-    for seq in seqs:
+    for seq in sequences:
         fh.write(seq.writeFasta())
     fh.close()
     
-def getMarkov(seqs, order = 0):
+def getMarkov(sequences, order = 0):
     """ Retrieve the Markov stats for a set of sequences. """
-    myseqs = seqs
-    if seqs is Sequence:
-        myseqs = list([seqs])
+    myseqs = sequences
+    if sequences is Sequence:
+        myseqs = list([sequences])
     myalpha = None
     for seq in myseqs:
         if myalpha == None:
@@ -276,18 +276,18 @@ def getMarkov(seqs, order = 0):
             jp.observe(sub)
     return jp
 
-def getCount(seqs, findme = None):
+def getCount(sequences, findme = None):
     if findme != None:
         cnt = 0
-        for seq in seqs:
+        for seq in sequences:
             cnt += seq.count(findme)
         return cnt
     else: 
-        if len(seqs) > 0:
-            alpha = seqs[0].alphabet
+        if len(sequences) > 0:
+            alpha = sequences[0].alphabet
             patcnt = {}
             for a in alpha:
-                patcnt[a] = getCount(seqs, a)
+                patcnt[a] = getCount(sequences, a)
         return patcnt
     
 # Alignment ------------------
@@ -296,20 +296,20 @@ class Alignment():
     """ A sequence alignment class. Stores two or more sequences of equal length where
     one symbol is gap '-' 
     Example usage:
-    >>> seqs = [Sequence('THIS_LI_NE', Protein_Alphabet, gappy = True), Sequence('--ISALIGNED', Protein_Alphabet, gappy = True)]
-    >>> print Alignment(seqs)
+    >>> sequences = [Sequence('THIS_LI_NE', Protein_Alphabet, gappy = True), Sequence('--ISALIGNED', Protein_Alphabet, gappy = True)]
+    >>> print Alignment(sequences)
      THIS-LI-NE-
      --ISALIGNED """
     
     alignlen = None
-    seqs = None
+    sequences = None
     alphabet = None
     
-    def __init__(self, seqs):
+    def __init__(self, sequences):
         self.alignlen = -1
-        self.seqs = seqs
+        self.seqs = sequences
         self.alphabet = None
-        for s in seqs:
+        for s in sequences:
             if self.alignlen == -1:
                 self.alignlen = len(s)
             elif self.alignlen != len(s):
@@ -417,7 +417,7 @@ class Alignment():
 def readClustal(string, alphabet):
     """ Read a ClustalW2 alignment in the given string and return as an
     Alignment object. """
-    seqs = {} # sequence data
+    sequences = {} # sequence data
     for line in string.splitlines():
         if line.startswith('CLUSTAL') or line.startswith('STOCKHOLM') \
            or line.startswith('#'):
@@ -428,12 +428,12 @@ def readClustal(string, alphabet):
             continue
         sections = line.split()
         name, seqstr = sections[0:2]
-        if seqs.has_key(name):
-            seqs[name] += seqstr
+        if sequences.has_key(name):
+            sequences[name] += seqstr
         else:
-            seqs[name] = seqstr
+            sequences[name] = seqstr
     sequences = []
-    for name, seqstr in seqs.items():
+    for name, seqstr in sequences.items():
         sequences.append(Sequence(seqstr, alphabet, name, gappy = True))
     return Alignment(sequences)
 

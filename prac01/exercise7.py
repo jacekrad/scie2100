@@ -38,6 +38,8 @@ for sequence in sequences_q5:
     if sequence.name in common_ids:
         result_sequences.append(sequence)
         result_dictionary[sequence.name] = sequence
+
         
 seq.writeFastaFile(ex7_filename, result_sequences)
 print "saved results to ", ex7_filename
+
