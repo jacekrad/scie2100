@@ -140,7 +140,8 @@ preferredOrder = ['DNA', 'RNA', 'DNAwN', 'RNAwN', 'Protein', 'ProteinwX']
 # Useful annotations
 DNA_Alphabet.annotateAll('html-color', {'A':'green','C':'orange','G':'red','T':'#66bbff'})
 RNA_Alphabet.annotateAll('html-color', {'A':'green','C':'orange','G':'red','U':'#66bbff'})
-Protein_Alphabet.annotateAll('html-color', {'G':'orange','P':'orange','S':'orange','T':'orange','H':'red','K':'red','R':'red','F':'#66bbff','Y':'#66bbff','W':'#66bbff','I':'green','L':'green','M':'green','V':'green'})
+#Protein_Alphabet.annotateAll('html-color', {'G':'orange','P':'orange','S':'orange','T':'orange','H':'red','K':'red','R':'red','F':'#66bbff','Y':'#66bbff','W':'#66bbff','I':'green','L':'green','M':'green','V':'green'})
+Protein_Alphabet.annotateAll('html-color', {'G':'orange','P':'blue','S':'orange','T':'orange','H':'red','K':'red','R':'red','F':'#66bbff','Y':'#66bbff','W':'#66bbff','I':'blue','L':'green','M':'blue','V':'blue'})
 
 # ------------------ Substitution Matrix ------------------
 
