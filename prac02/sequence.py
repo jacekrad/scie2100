@@ -23,6 +23,7 @@ import numpy
 from webservice import *
 from symbol import *
 from prob import *
+from pyparsing import nums
 
 # Sequence ------------------
 
@@ -385,8 +386,13 @@ class Alignment():
         aminoAcids = self.alphabet.symbols
         columns = self.alignlen                   # Length of sequences in alignment
         numSeqs = len(self.seqs)                  # Number of sequences in alignment
-        seqPairs = None # FIXME                   # Number of pairs of sequences in ungapped alignment
-        aaPairs = None # FIXME                    # Number of pairs of amino acids in ungapped alignment
+        #seqPairs = None # FIXME                   # Number of pairs of sequences in ungapped alignment
+        
+        seqPairs = math.factorial(numSeqs) / (2 * math.factorial(numSeqs - 2))
+                                  
+        #aaPairs = None # FIXME
+        aaPairs =  columns * seqPairs
+                            # Number of pairs of amino acids in ungapped alignment
         # For each pair of amino acids, calculate the proportion of all aligned
         # amino acids in this alignment which are made up of that pair
         # (i.e., q[ab] = fab / aaPairs, where fab is the number of times
