@@ -31,14 +31,14 @@ class Sequence(object):
     the alphabet (i.e., type of sequence it is), and optionally a name and further 
     information. """
     
-    sequence = None # The array of symbols that make up the sequence 
-    alphabet = None # The alphabet from which symbols come
-    name =     None # The name (identifier) of a sequence
-    info =     None # Other information (free text; e.g. annotations)
-    length =   None # The number of symbols that the sequence is composed of
-    gappy =    None # True if the sequence has "gaps", i.e. positions that represent deletions relative another sequence
+    sequence = None  # The array of symbols that make up the sequence 
+    alphabet = None  # The alphabet from which symbols come
+    name = None  # The name (identifier) of a sequence
+    info = None  # Other information (free text; e.g. annotations)
+    length = None  # The number of symbols that the sequence is composed of
+    gappy = None  # True if the sequence has "gaps", i.e. positions that represent deletions relative another sequence
     
-    def __init__(self, sequence, alphabet = None, name = '', info = '', gappy = False):
+    def __init__(self, sequence, alphabet=None, name='', info='', gappy=False):
         """ Create a sequence with the sequence data. Specifying the alphabet,
         name and other information about the sequence are all optional.
         The sequence data is immutable (stored as a string).
@@ -51,7 +51,7 @@ class Sequence(object):
         ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q',
         'R', 'S', 'T', 'V', 'W', 'Y'] """
         
-        try: # convert sequence data into a compact array representation
+        try:  # convert sequence data into a compact array representation
             self.sequence = array.array('c', ''.join([s.upper() for s in sequence]))
         except TypeError:
             raise RuntimeError('Sequence data is not specified correctly: must be iterable')
@@ -139,11 +139,11 @@ class Sequence(object):
         data = self.sequence.tostring()
         nlines = (len(self.sequence) - 1) / 60 + 1
         for i in range(nlines):
-            lineofseq = ''.join(data[i*60 : (i+1)*60]) + '\n'
+            lineofseq = ''.join(data[i * 60 : (i + 1) * 60]) + '\n'
             fasta += lineofseq
         return fasta
     
-    def count(self, findme = None):
+    def count(self, findme=None):
         """ Get the number of occurrences of specified symbol findme OR
             if findme = None, return a dictionary of counts of all symbols in alphabet """
         if findme != None:
@@ -166,21 +166,21 @@ class Sequence(object):
 Below are some useful methods for loading data from strings and files.
 Recognize the FASTA format (nothing fancy). 
 """
-def readFasta(string, alphabet = None, ignore = False):
+def readFasta(string, alphabet=None, ignore=False):
     """ Read the given string as FASTA formatted data and return the list of
         sequences contained within it. 
         If alphabet is specified, use it, if None (default) then guess it.
         If ignore is False, errors cause the method to fail.
         If ignore is True, errors will disregard sequence."""
-    seqlist = []    # list of sequences contained in the string 
+    seqlist = []  # list of sequences contained in the string 
     seqname = None  # name of *current* sequence 
     seqinfo = None
-    seqdata = []    # sequence data for *current* sequence
-    for line in string.splitlines():    # read every line
-        if len(line) == 0:              # ignore empty lines
+    seqdata = []  # sequence data for *current* sequence
+    for line in string.splitlines():  # read every line
+        if len(line) == 0:  # ignore empty lines
             continue
         if line[0] == '>':  # start of new sequence            
-            if seqname:     # check if we've got one current
+            if seqname:  # check if we've got one current
                 try:
                     current = Sequence(seqdata, alphabet, seqname, seqinfo)
                     seqlist.append(current)
@@ -188,7 +188,7 @@ def readFasta(string, alphabet = None, ignore = False):
                     if not ignore:
                         raise RuntimeError(errmsg)
             # now collect data about the new sequence
-            seqinfo = line[1:].split() # skip first char
+            seqinfo = line[1:].split()  # skip first char
             if len(seqinfo) > 0:
                 parsed = parseDefline(seqinfo[0])
                 seqname = parsed[0]
@@ -197,7 +197,7 @@ def readFasta(string, alphabet = None, ignore = False):
                 seqname = ''
                 seqinfo = ''
             seqdata = []
-        else:               # we assume this is (more) data for current
+        else:  # we assume this is (more) data for current
             cleanline = line.split()
             for thisline in cleanline:
                 seqdata.extend(tuple(thisline.strip('*')))
@@ -229,7 +229,7 @@ def parseDefline(string):
     elif re.match("refseq\|\S+\|\S+", s):                   arg = s.split('|');  return (arg[1], arg[2], arg[0], '')
     else: return (s, '', '', '')
 
-def readFastaFile(filename, alphabet = None, ignore = False):
+def readFastaFile(filename, alphabet=None, ignore=False):
     """ Read the given FASTA formatted file and return the list of sequences 
         contained within it. Note that if alphabet is NOT specified, it will take a 
         separate guess for each sequence. 
@@ -237,7 +237,7 @@ def readFastaFile(filename, alphabet = None, ignore = False):
         If ignore is True, errors will disregard sequence."""
     fh = open(filename)
     seqlist = []
-    batch = '' # a batch of rows including one or more complete FASTA entries
+    batch = ''  # a batch of rows including one or more complete FASTA entries
     rowcnt = 0 
     for row in fh:
         row = row.strip()
@@ -264,7 +264,7 @@ def writeFastaFile(filename, seqs):
         fh.write(seq.writeFasta())
     fh.close()
     
-def getMarkov(seqs, order = 0):
+def getMarkov(seqs, order=0):
     """ Retrieve the Markov stats for a set of sequences. """
     myseqs = seqs
     if seqs is Sequence:
@@ -283,7 +283,7 @@ def getMarkov(seqs, order = 0):
             jp.observe(sub)
     return jp
 
-def getCount(seqs, findme = None):
+def getCount(seqs, findme=None):
     if findme != None:
         cnt = 0
         for seq in seqs:
@@ -335,25 +335,25 @@ class Alignment():
         string = ''
         namelen = self.getnamelen()
         for seq in self.seqs:
-            string += seq.name.ljust(namelen+1)
+            string += seq.name.ljust(namelen + 1)
             for sym in seq:
                 string += sym
             string += '\n'
         return string
 
-    def writeClustal(self, filename = None):
+    def writeClustal(self, filename=None):
         """ Write the alignment to a string or file using the Clustal file format. """
         symbolsPerLine = 60
-        maxNameLength =  self.getnamelen() + 1
+        maxNameLength = self.getnamelen() + 1
         string = ''
         wholeRows = self.alignlen / symbolsPerLine
         for i in range(wholeRows):
             for j in range(len(self.seqs)):
                 string += self.seqs[j].name.ljust(maxNameLength) + ' '
-                string += self.seqs[j][i*symbolsPerLine:(i+1)*symbolsPerLine] + '\n'
+                string += self.seqs[j][i * symbolsPerLine:(i + 1) * symbolsPerLine] + '\n'
             string += '\n'
         # Possible last row
-        lastRowLength = self.alignlen - wholeRows*symbolsPerLine
+        lastRowLength = self.alignlen - wholeRows * symbolsPerLine
         if lastRowLength > 0:
             for j in range(len(self.seqs)):
                 if maxNameLength > 0:
@@ -361,13 +361,13 @@ class Alignment():
                 string += self.seqs[j][-lastRowLength:] + '\n'
         if filename != None:
             fh = open(filename, 'w')
-            fh.write('CLUSTAL W (1.83) multiple sequence alignment\n\n\n') # fake header so that clustal believes it
+            fh.write('CLUSTAL W (1.83) multiple sequence alignment\n\n\n')  # fake header so that clustal believes it
             fh.write(string)
             fh.close()
             return
         return string
     
-    def getProfile(self, pseudo = 0.0):
+    def getProfile(self, pseudo=0.0):
         """ Determine the probability matrix from the alignment, assuming
         that each position is independent of all others. """
         p = IndepJoint([self.alphabet for _ in range(self.alignlen)], pseudo)
@@ -381,26 +381,26 @@ class Alignment():
         p = Distrib(self.alphabet)
         for seq in self.seqs:
             for sym in seq:
-                if sym in self.alphabet: # ignore "gaps"
+                if sym in self.alphabet:  # ignore "gaps"
                     p.observe(sym)
         return p
     
-    def calcSubstMatrix(self, background = None):
+    def calcSubstMatrix(self, background=None):
         """ Return a substitutionMatrix whose fg are based on this un-gapped
         multiple sequence alignment. Scores are given in half-bits. """
         # Get a list of the amino acids
         aminoAcids = self.alphabet.symbols
-        columns = self.alignlen                   # Length of sequences in alignment
-        numSeqs = len(self.seqs)                  # Number of sequences in alignment
-        seqPairs = (numSeqs* (numSeqs - 1) ) / 2  # Number of pairs of sequences in ungapped alignment
-        aaPairs = seqPairs * columns              # Number of pairs of amino acids in ungapped alignment
+        columns = self.alignlen  # Length of sequences in alignment
+        numSeqs = len(self.seqs)  # Number of sequences in alignment
+        seqPairs = (numSeqs * (numSeqs - 1)) / 2  # Number of pairs of sequences in ungapped alignment
+        aaPairs = seqPairs * columns  # Number of pairs of amino acids in ungapped alignment
         # For each pair of amino acids, calculate the proportion of all aligned
         # amino acids in this alignment which are made up of that pair
         # (i.e., q[ab] = fab / aaPairs, where fab is the number of times
         #  a and b are aligned in this alignment)
         # See page 122 in Understanding Bioinformatics.
         q = {}
-        for i in range( len(aminoAcids) ):
+        for i in range(len(aminoAcids)):
             a = aminoAcids[i]
             for j in range(i, len(aminoAcids)):
                 b = aminoAcids[j]
@@ -413,15 +413,15 @@ class Alignment():
                         # Number of ways of pairing up n occurrences of amino
                         # acid a is n*(n-1)/2
                         cnt = col.count(a)
-                        fab += cnt * (cnt-1)/2
+                        fab += cnt * (cnt - 1) / 2
                     else:
                         # Number of ways of pairing up n & m occurrences of
                         # amino acids a & b is n*m
-                        fab += col.count(a)*col.count(b)
+                        fab += col.count(a) * col.count(b)
                 # Calculate proportion of all aligned pairs of amino acids
-                q[a+b] = q[b+a] = float(fab) / aaPairs
-                if q[a+b] == 0:   # This is so we don't end up doing log(0)
-                    q[a+b] = q[b+a] = 0.001
+                q[a + b] = q[b + a] = float(fab) / aaPairs
+                if q[a + b] == 0:  # This is so we don't end up doing log(0)
+                    q[a + b] = q[b + a] = 0.001
         # Background frequency calculation if required
         p = background or self.calcBackground()
         # Calculate log-odds ratio for each pair of amino acids
@@ -430,15 +430,15 @@ class Alignment():
             for b in aminoAcids:
                 # Calculate random chance probabilitity (eab)
                 if a == b:
-                    eab = p[a]**2
+                    eab = p[a] ** 2
                 else:
-                    eab = 2*p[a]*p[b]
+                    eab = 2 * p[a] * p[b]
                 if eab == 0:
                     eab = 0.001
                 # Calculate final score to be set in the substitution matrix
-                odds = q[a+b] / eab
-                sab = math.log(odds, 2) # log_2 transform
-                sab = sab * 2 # units in half bits
+                odds = q[a + b] / eab
+                sab = math.log(odds, 2)  # log_2 transform
+                sab = sab * 2  # units in half bits
                 s.set(a, b, int(round(sab)))
         return s
     
@@ -461,7 +461,7 @@ class Alignment():
                     seqB = self.seqs[j]
                     # Calculate the fractional distance (p) first
                     # The two sequences of interest are in seqA and seqB
-                    p = 0 # ?
+                    p = 0  # ?
                     L = 0
                     D = 0
                     for k in range(len(self.seqs[i])):
@@ -472,18 +472,18 @@ class Alignment():
                             L += 1
                             if self.seqs[i][k] != self.seqs[j][k]:
                                 D += 1
-                    p = float(D)/L
+                    p = float(D) / L
                     # Now calculate the specified measure based on p
                     if measure == 'fractional':
                         dist = p
                     elif measure == 'poisson':
-                        dist = -math.log(1-p)
+                        dist = -math.log(1 - p)
                     elif measure == 'jc':
-                        dist = -(3.0/4)*math.log(1 - (4.0/3)*p)
+                        dist = -(3.0 / 4) * math.log(1 - (4.0 / 3) * p)
                     elif measure == 'k2p':
-                        dist = (3.0/4)*a*((1 - (4.0/3)*p)**(-1/a) - 1)
-                    else: # measure == 'gamma'
-                        dist = a*((1-p)**(-1/a) - 1)
+                        dist = (3.0 / 4) * a * ((1 - (4.0 / 3) * p) ** (-1 / a) - 1)
+                    else:  # measure == 'gamma'
+                        dist = a * ((1 - p) ** (-1 / a) - 1)
                     distances[self.seqs[i].name + '-' + self.seqs[j].name] = dist
         return distances
 
@@ -494,11 +494,11 @@ class Alignment():
         """
         fh = open(filename, 'w')
         fh.write('<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type">\n<title>Sequence Alignment</title>\n</head><body><pre>\n')
-        maxNameLength =  self.getnamelen()
+        maxNameLength = self.getnamelen()
         html = ''.ljust(maxNameLength) + ' '
         for i in range(self.alignlen - 1):
-            if (i+1) % 10 == 0:
-                html += str(i/10+1)[-1]
+            if (i + 1) % 10 == 0:
+                html += str(i / 10 + 1)[-1]
             else:
                 html += ' '
         html += '%s\n' % (self.alignlen)
@@ -506,7 +506,7 @@ class Alignment():
         if self.alignlen > 10:
             html = ''.ljust(maxNameLength) + ' '
             for i in range(self.alignlen - 1):
-                if (i+1) % 10 == 0:
+                if (i + 1) % 10 == 0:
                     html += '0'
                 else:
                     html += ' '
@@ -524,7 +524,7 @@ class Alignment():
         fh.write('</pre></body></html>\n')
         fh.close()
 
-def alignGlobal(seqA, seqB, substMatrix, gap = -1):
+def alignGlobal(seqA, seqB, substMatrix, gap=-1):
     """ Align seqA with seqB using the Needleman-Wunsch
     (global) algorithm. subsMatrix is the substitution matrix to use and
     gap is the linear gap penalty to use. """
@@ -541,51 +541,51 @@ def alignGlobal(seqA, seqB, substMatrix, gap = -1):
     #  that ends at sequence indices i and j, for A and B, resp.)
     for i in range(1, lenA + 1):
         for j in range(1, lenB + 1):
-            match  = S[i-1, j-1] + substMatrix.get(seqA[i-1], seqB[j-1])
-            delete = S[i-1, j  ] + gap
-            insert = S[i  , j-1] + gap
+            match = S[i - 1, j - 1] + substMatrix.get(seqA[i - 1], seqB[j - 1])
+            delete = S[i - 1, j  ] + gap
+            insert = S[i  , j - 1] + gap
             S[i, j] = max([match, delete, insert])
+            # TODO fix this
     #######################################################################
     # Exercise 1: Complete the following block of code
     # Traceback the optimal alignment
-    alignA = '' # a string for sequence A when aligned (e.g. 'THIS-LI-NE-', initially empty).
-    alignB = '' # a string for sequence B when aligned (e.g. '--ISALIGNED', initially empty).
+    alignA = ''  # a string for sequence A when aligned (e.g. 'THIS-LI-NE-', initially empty).
+    alignB = ''  # a string for sequence B when aligned (e.g. '--ISALIGNED', initially empty).
     # Start at the end (bottom-right corner of S)
     i = lenA
     j = lenB
     # Stop when we hit the beginning of at least one sequence
     while i > 0 and j > 0:
-        #if ?: 
-            # Got here by a gap in sequence B (go up)
-            # alignA = ?
-            # alignB = ?
-            # i = ?
-        #elif ?: 
+        if S[i, j] == S[i - 1, j] + gap:
+            alignA = seqA[i - 1] + alignA
+            alignB = "-" + alignB
+            i -= 1
+        elif S[i, j] == S[i, j - 1] + gap: 
             # Got here by a gap in sequence A (go left)
-            # alignA = ?
-            # alignB = ?
-            # j = ?
-        #else:
+            alignA = "-" + alignA
+            alignB = seqB[j - 1] + alignB
+            j -= 1
+        else:
             # Got here by aligning the bases (go diagonally)
-            alignA = seqA[i-1] + alignA
-            alignB = seqB[j-1] + alignB
+            alignA = seqA[i - 1] + alignA
+            alignB = seqB[j - 1] + alignB
             i -= 1
             j -= 1
     # Fill in the rest of the alignment if it begins with gaps
     # (i.e., traceback all the way to S[0, 0])
     while i > 0:
         # Go up
-        # alignA = ?
-        # alignB = ?
+        alignA = seqA[i - 1] + alignA
+        alignB = "-" + alignB
         i = i - 1
     while j > 0:
         # Go left
-        # alignA = ?
-        # alignB = ?
+        alignA = "-" + alignA
+        alignB = seqB[j - 1] + alignB
         j = j - 1
-    return Alignment([Sequence(alignA, seqA.alphabet, seqA.name, gappy = True), Sequence(alignB, seqB.alphabet, seqB.name, gappy = True)])
+    return Alignment([Sequence(alignA, seqA.alphabet, seqA.name, gappy=True), Sequence(alignB, seqB.alphabet, seqB.name, gappy=True)])
 
-def alignLocal(seqA, seqB, substMatrix, gap = -1):
+def alignLocal(seqA, seqB, substMatrix, gap=-1):
     """ Align seqA with seqB using the Smith-Waterman
     (local) algorithm. subsMatrix is the substitution matrix to use and
     gap is the linear gap penalty to use. """
@@ -602,9 +602,9 @@ def alignLocal(seqA, seqB, substMatrix, gap = -1):
     #  that ends at sequence indices i and j, for A and B, resp.)
     for i in range(1, lenA + 1):
         for j in range(1, lenB + 1):
-            match  = S[i-1, j-1] + substMatrix.get(seqA[i-1], seqB[j-1])
-            delete = S[i-1, j  ] + gap
-            insert = S[i  , j-1] + gap
+            match = S[i - 1, j - 1] + substMatrix.get(seqA[i - 1], seqB[j - 1])
+            delete = S[i - 1, j  ] + gap
+            insert = S[i  , j - 1] + gap
             S[i, j] = max([match, delete, insert, 0])  # Local: add option that we re-start alignment from "0"
     #######################################################################
     # Exercise 2: Complete the following block of code
@@ -622,28 +622,27 @@ def alignLocal(seqA, seqB, substMatrix, gap = -1):
     # Stop when we hit the beginning of at least one sequence
     # Local: also stop when we hit a score 0 
     while i > 0 and j > 0 and S[i, j] > 0:
-        #if ?: 
-            # alignA = ?
-            # alignB = ?
-            # i = ?
-        #elif ?: 
-            # Got here by a gap in sequence A (go left)
-            # alignA = ?
-            # alignB = ?
-            # j = ?
-        #else:
+        if S[i, j] == S[i - 1, j] + gap:
+            alignA = seqA[i - 1] + alignA
+            alignB = "-" + alignB
+            i -= 1
+        elif S[i, j] == S[i, j - 1] + gap: 
+            alignA = "-" + alignA
+            alignB = seqB[j - 1] + alignB
+            j -= 1            # alignA = ?
+        else:
             # Got here by aligning the bases (go diagonally)
-            alignA = seqA[i-1] + alignA
-            alignB = seqB[j-1] + alignB
+            alignA = seqA[i - 1] + alignA
+            alignB = seqB[j - 1] + alignB
             i -= 1
             j -= 1
-    return Alignment([Sequence(alignA, seqA.alphabet, seqA.name, gappy = True), Sequence(alignB, seqB.alphabet, seqB.name, gappy = True)])
+    return Alignment([Sequence(alignA, seqA.alphabet, seqA.name, gappy=True), Sequence(alignB, seqB.alphabet, seqB.name, gappy=True)])
 
 
 def readClustal(string, alphabet):
     """ Read a ClustalW2 alignment in the given string and return as an
     Alignment object. """
-    seqs = {} # sequence data
+    seqs = {}  # sequence data
     for line in string.splitlines():
         if line.startswith('CLUSTAL') or line.startswith('STOCKHOLM') \
            or line.startswith('#'):
@@ -660,7 +659,7 @@ def readClustal(string, alphabet):
             seqs[name] = seqstr
     sequences = []
     for name, seqstr in seqs.items():
-        sequences.append(Sequence(seqstr, alphabet, name, gappy = True))
+        sequences.append(Sequence(seqstr, alphabet, name, gappy=True))
     return Alignment(sequences)
 
 def readClustalFile(filename, alphabet):
@@ -676,7 +675,7 @@ def readClustalFile(filename, alphabet):
 
 class SubstMatrix():
     
-    def __init__(self, alphabet, scoremat = {}):
+    def __init__(self, alphabet, scoremat={}):
         self.scoremat = scoremat
         self.alphabet = alphabet
 
@@ -695,12 +694,12 @@ class SubstMatrix():
         return self.scoremat[self._getkey(sym1, sym2)]
         
     def __str__(self):
-        symbols = self.alphabet.symbols # what symbols are in the alphabet
+        symbols = self.alphabet.symbols  # what symbols are in the alphabet
         i = len(symbols)
         string = ''
         for a in symbols:
             string += a + ' '
-            for b in symbols[:len(symbols)-i+1]:
+            for b in symbols[:len(symbols) - i + 1]:
                 score = self.scoremat[self._getkey(a, b)]
                 if score != None:
                     string += str(score).rjust(3) + ' '
@@ -736,9 +735,9 @@ def readSubstMatrix(filename, alphabet):
         mat.set(symbols[0], symbols[1], score)
     return mat
 
-#import os
-#os.chdir('/Users/mikael/workspace/binf/data/')  # set to the directory where you keep your files 
-#BLOSUM62 = readSubstMatrix('blosum62.matrix', Protein_Alphabet)
+# import os
+# os.chdir('/Users/mikael/workspace/binf/data/')  # set to the directory where you keep your files 
+# BLOSUM62 = readSubstMatrix('blosum62.matrix', Protein_Alphabet)
 
 # Motifs -------------------
 
@@ -777,7 +776,7 @@ class PWM(object):
     
     """ A position weight matrix. """
     
-    def __init__(self, foreground, background = None, start = 0, end = None):
+    def __init__(self, foreground, background=None, start=0, end=None):
         """ Create a new PWM from the given probability matrix/ces.
         foreground: can be either a list of Distrib's or an instance of IndepJoint.
         Specify only a section of the matrix to use with start and end. """
@@ -793,7 +792,7 @@ class PWM(object):
         # Set foreground probabilities from given alignment
         self.m = numpy.zeros((len(self.symbols), self.length))
         self.fg = foreground[self.start:self.end]
-        self.bg = background or Distrib(self.alphabet, 1.0) # specified background or uniform
+        self.bg = background or Distrib(self.alphabet, 1.0)  # specified background or uniform
         if not self.alphabet == self.bg.alpha:
             raise RuntimeError("Background needs to use the same alphabet as the foreground")
         p = self.bg.prob()
@@ -805,7 +804,7 @@ class PWM(object):
     def __len__(self):
         return self.length
     
-    def getRC(self, swap = [('A', 'T'), ('C', 'G')] ):
+    def getRC(self, swap=[('A', 'T'), ('C', 'G')]):
         """ Get the reverse complement of the current PWM.
             Use for DNA sequences with default params.
         """
@@ -821,15 +820,15 @@ class PWM(object):
             ratio = fg / bg
             return math.log(ratio)
         # if not, one of fg and bg is practically zero
-        if fg > self.MIN_VALUE: # bg is zero 
+        if fg > self.MIN_VALUE:  # bg is zero 
             return math.log(fg / self.MIN_VALUE)
-        else: # fg is zero
+        else:  # fg is zero
             return math.log(self.MIN_VALUE)
         
     def getMatrix(self):
         return self.m
                 
-    def display(self, format = 'COLUMN'):
+    def display(self, format='COLUMN'):
         if format == 'COLUMN':
             print " \t%s" % (' '.join(" %5d" % (i + 1) for i in range(self.length)))
             for j in range(len(self.alphabet)):
@@ -844,7 +843,7 @@ class PWM(object):
         The optional argument lowerBound specifies a lower bound on reported
         scores. """
         results = []
-        for i in range(len(sequence)-self.length+1):
+        for i in range(len(sequence) - self.length + 1):
             subseq = sequence[i:i + self.length]
             ndxseq = [ self.alphabet.index(sym) for sym in subseq ]
             score = 0.0
@@ -860,7 +859,7 @@ class PWM(object):
             (maxscore, maxindex) """
         maxscore = None
         maxindex = None
-        for i in range(len(sequence)-self.length+1):
+        for i in range(len(sequence) - self.length + 1):
             subseq = sequence[i:i + self.length]
             ndxseq = [ self.alphabet.index(sym) for sym in subseq ]
             score = 0.0
@@ -876,7 +875,7 @@ class PWM(object):
 
 # Web Service Functions -------------------
 
-def getSequence(id, database = 'uniprotkb', start=None, end=None):
+def getSequence(id, database='uniprotkb', start=None, end=None):
     """ Get the sequence identified by the given ID from the given database
     (e.g. 'uniprotkb', 'refseqn' or 'refseqp'), and return it as a Sequence
     object. An error is caused if the sequence ID is not found. If start and
@@ -893,7 +892,7 @@ def getSequence(id, database = 'uniprotkb', start=None, end=None):
 def searchSequences(query, database='uniprot'):
     """ Search for sequences matching the given query in the given database
     (must be 'uniprot'), and return a list of sequence IDs. """
-    ids = search(query, limit = None)
+    ids = search(query, limit=None)
     return ids
 
 def runClustal(sequences, method='slow'):
@@ -945,22 +944,22 @@ def runBLAST(sequence, program='blastp', database='uniprotkb', exp='1e-1'):
     else:
         stype = 'protein'
     serviceName = 'ncbiblast'
-    resultTypes = ['ids', 'out'] # request 
+    resultTypes = ['ids', 'out']  # request 
     fastaSeq = sequence.writeFasta()
     databases = [database]
     params = {'program': program, 'database': databases, 'sequence': fastaSeq,
               'stype': stype, 'exp': exp}
     service = EBI(serviceName)
     idsData, output = service.submit(params, resultTypes)
-    ids=[]
+    ids = []
     for id in idsData.splitlines():
         if len(id) > 0:
             ids.append(id.split(':')[1])
     return ids
 
 if __name__ == '__main__':
-    seqA = Sequence('THISLINE', Protein_Alphabet, name = 'SeqA')
-    seqB = Sequence('ISALIGNED', Protein_Alphabet, name = 'SeqB')
+    seqA = Sequence('THISLINE', Protein_Alphabet, name='SeqA')
+    seqB = Sequence('ISALIGNED', Protein_Alphabet, name='SeqB')
     smat = readSubstMatrix('blosum62.matrix', Protein_Alphabet)
     aln_global = alignGlobal(seqA, seqB, smat, -8)
     print aln_global
