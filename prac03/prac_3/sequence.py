@@ -98,6 +98,13 @@ class Sequence(object):
             str += sym
         return str
     
+    def getSeqString(self):
+        """ return sequence as string """
+        str = ""
+        for sym in self:
+            str += sym
+        return str
+    
     def __iter__(self):
         """ Defines how a Sequence should be "iterated", i.e. what its elements are, e.g.
         >>> seq = new Sequence('AGGAT', DNA_Alphabet)
