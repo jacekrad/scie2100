@@ -531,6 +531,42 @@ class Alignment():
         fh.write('</pre></body></html>\n')
         fh.close()
 
+    def writeXML(self, filename):
+        """ Attempt to dump an XML file to separate the structure logic from formatting
+        """
+        fh = open(filename, 'w')
+        fh.write('<sequence-alignment>\n<title>Sequence Alignment</title><rows>\n<row>\n')
+        maxNameLength =  self.getnamelen()
+        xml = ''.ljust(maxNameLength) + ' '
+        for i in range(self.alignlen - 1):
+            if (i+1) % 10 == 0:
+                xml += str(i/10+1)[-1]
+            else:
+                xml += ' '
+        xml += '%s\n' % (self.alignlen)
+        fh.write(xml)
+        if self.alignlen > 10:
+            xml = ''.ljust(maxNameLength) + ' '
+            for i in range(self.alignlen - 1):
+                if (i+1) % 10 == 0:
+                    xml += '0'
+                else:
+                    xml += ' '
+            xml += '</row>\n'
+            fh.write(xml)
+        for seq in self.seqs:
+            xml = "<row>\n"
+            xml += "<name>" + seq.name.ljust(maxNameLength) + "</name>\n"
+            for sym in seq:
+                color = self.alphabet.getAnnotation('html-color', sym)
+                if not color:
+                    color = 'w'
+                xml += '<e c="%s">%s</e>' % (color, sym)
+            xml += "</row>\n"
+            fh.write(xml)
+        fh.write('</rows></sequence-alignment>\n')
+        fh.close()
+
 def alignGlobal(seqA, seqB, substMatrix, gap=-1):
     """ Align seqA with seqB using the Needleman-Wunsch
     (global) algorithm. subsMatrix is the substitution matrix to use and
