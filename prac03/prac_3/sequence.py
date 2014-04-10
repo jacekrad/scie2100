@@ -31,12 +31,12 @@ class Sequence(object):
     the alphabet (i.e., type of sequence it is), and optionally a name and further 
     information. """
     
-    sequence = None  # The array of symbols that make up the sequence 
-    alphabet = None  # The alphabet from which symbols come
-    name = None  # The name (identifier) of a sequence
-    info = None  # Other information (free text; e.g. annotations)
-    length = None  # The number of symbols that the sequence is composed of
-    gappy = None  # True if the sequence has "gaps", i.e. positions that represent deletions relative another sequence
+#    sequence = None  # The array of symbols that make up the sequence 
+#    alphabet = None  # The alphabet from which symbols come
+#    name = None  # The name (identifier) of a sequence
+#    info = None  # Other information (free text; e.g. annotations)
+#    length = None  # The number of symbols that the sequence is composed of
+#    gappy = None  # True if the sequence has "gaps", i.e. positions that represent deletions relative another sequence
     
     def __init__(self, sequence, alphabet=None, name='', info='', gappy=False):
         """ Create a sequence with the sequence data. Specifying the alphabet,
@@ -315,11 +315,14 @@ class Alignment():
      THIS-LI-NE-
      --ISALIGNED """
     
-    alignlen = None
-    seqs = None
-    alphabet = None
+#    alignlen = None
+#    seqs = None
+#    alphabet = None
+    
+
     
     def __init__(self, seqs):
+        self.gap_penalty = None       
         self.alignlen = -1
         self.seqs = seqs
         self.alphabet = None
@@ -626,7 +629,9 @@ def alignGlobal(seqA, seqB, substMatrix, gap=-1):
         alignA = "-" + alignA
         alignB = seqB[j - 1] + alignB
         j = j - 1
-    return Alignment([Sequence(alignA, seqA.alphabet, seqA.name, gappy=True), Sequence(alignB, seqB.alphabet, seqB.name, gappy=True)])
+    alignment = Alignment([Sequence(alignA, seqA.alphabet, seqA.name, gappy=True), Sequence(alignB, seqB.alphabet, seqB.name, gappy=True)])
+    alignment.gap_penalty = gap
+    return alignment
 
 def alignLocal(seqA, seqB, substMatrix, gap=-1):
     """ Align seqA with seqB using the Smith-Waterman
@@ -719,7 +724,7 @@ def readClustalFile(filename, alphabet):
 class SubstMatrix():
     
     def __init__(self, alphabet, scoremat={}):
-        self.scoremat = scoremat
+        self.scoremat = scoremat.copy()
         self.alphabet = alphabet
 
     def _getkey(self, sym1, sym2):

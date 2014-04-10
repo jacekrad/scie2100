@@ -20,7 +20,7 @@ class SequenceTest(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testGlobalAlignment_gap8_test(self):
+    def testGlobalAlignment_gap8_test(self): 
         aln_global_8 = alignGlobal(self.seqA, self.seqB, self.smat, -8)
         expected1 = aln_global_8.seqs[0].getSeqString()
         expected2 = aln_global_8.seqs[1].getSeqString()
