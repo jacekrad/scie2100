@@ -569,6 +569,31 @@ class Alignment():
             fh.write(xml)
         fh.write('</rows></sequence-alignment>\n')
         fh.close()
+        
+    def toXML(self):
+        """ Attempt to dump an XML representation of this alignment
+        """
+        xml = ""
+        xml += "<sequence-alignment gap-penalty=\"" + str(self.gap_penalty) + "\">\n<sequences>\n"
+        maxNameLength =  self.getnamelen()
+        xml += ''.ljust(maxNameLength) + ' '
+        for sequence in self.seqs:
+            xml += "<sequence>\n"
+            xml += "<name>" + sequence.name.ljust(maxNameLength) + "</name>\n"
+            seq_length = len(sequence)
+            position = 0 
+            for sym in sequence:
+                if sym == '-':
+                    xml += "<GAP/>"
+                else:
+                    if seq_length > (position + 2) and sym == 'A' and sequence[position + 1] == 'T' and sequence[position + 2] == 'G':
+                        xml += "<" + sym + " codon=\"start\" />"
+                    else:
+                        xml += "<" + sym + "/>"
+                position += 1
+            xml += "</sequence>\n"
+        xml += "</sequences></sequence-alignment>\n"
+        return xml
 
 def alignGlobal(seqA, seqB, substMatrix, gap=-1):
     """ Align seqA with seqB using the Needleman-Wunsch
@@ -601,7 +626,11 @@ def alignGlobal(seqA, seqB, substMatrix, gap=-1):
     i = lenA
     j = lenB
     # Stop when we hit the beginning of at least one sequence
+    
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # starting at the bottom right hand corner of the matrix trace back to the origin 0,0
     while i > 0 and j > 0:
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if S[i, j] == S[i - 1, j] + gap:
             alignA = seqA[i - 1] + alignA
             alignB = "-" + alignB
@@ -611,6 +640,7 @@ def alignGlobal(seqA, seqB, substMatrix, gap=-1):
             alignA = "-" + alignA
             alignB = seqB[j - 1] + alignB
             j -= 1
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         else:
             # Got here by aligning the bases (go diagonally)
             alignA = seqA[i - 1] + alignA
@@ -621,16 +651,20 @@ def alignGlobal(seqA, seqB, substMatrix, gap=-1):
     # (i.e., traceback all the way to S[0, 0])
     while i > 0:
         # Go up
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         alignA = seqA[i - 1] + alignA
         alignB = "-" + alignB
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         i = i - 1
     while j > 0:
         # Go left
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         alignA = "-" + alignA
         alignB = seqB[j - 1] + alignB
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         j = j - 1
     alignment = Alignment([Sequence(alignA, seqA.alphabet, seqA.name, gappy=True), Sequence(alignB, seqB.alphabet, seqB.name, gappy=True)])
-    alignment.gap_penalty = gap
+    alignment.gap_penalty = gap # save the gap for future analysis
     return alignment
 
 def alignLocal(seqA, seqB, substMatrix, gap=-1):
@@ -653,6 +687,7 @@ def alignLocal(seqA, seqB, substMatrix, gap=-1):
             match = S[i - 1, j - 1] + substMatrix.get(seqA[i - 1], seqB[j - 1])
             delete = S[i - 1, j  ] + gap
             insert = S[i  , j - 1] + gap
+            #!!!!! one difference to globa
             S[i, j] = max([match, delete, insert, 0])  # Local: add option that we re-start alignment from "0"
     #######################################################################
     # Exercise 2: Complete the following block of code
@@ -670,6 +705,7 @@ def alignLocal(seqA, seqB, substMatrix, gap=-1):
     # Stop when we hit the beginning of at least one sequence
     # Local: also stop when we hit a score 0 
     while i > 0 and j > 0 and S[i, j] > 0:
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if S[i, j] == S[i - 1, j] + gap:
             alignA = seqA[i - 1] + alignA
             alignB = "-" + alignB
@@ -678,6 +714,7 @@ def alignLocal(seqA, seqB, substMatrix, gap=-1):
             alignA = "-" + alignA
             alignB = seqB[j - 1] + alignB
             j -= 1            # alignA = ?
+        # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~            
         else:
             # Got here by aligning the bases (go diagonally)
             alignA = seqA[i - 1] + alignA

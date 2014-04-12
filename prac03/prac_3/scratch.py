@@ -64,19 +64,13 @@ print blosum_alignment
 
 root = tk.Tk()
 root.geometry("2250x1080+0+0")
-tkalign.AlignmentFrame(root, alignGlobal(p08684_sequence, q16802_sequence, blosum62_matrix, -2), "BLOSUM62 matrix")
-tkalign.AlignmentFrame(root, alignGlobal(p08684_sequence, q16802_sequence, blosum62_matrix, -4), "BLOSUM62 matrix")
-tkalign.AlignmentFrame(root, alignGlobal(p08684_sequence, q16802_sequence, blosum62_matrix, -6), "BLOSUM62 matrix")
-tkalign.AlignmentFrame(root, alignGlobal(p08684_sequence, q16802_sequence, blosum62_matrix, -8), "BLOSUM62 matrix")
-tkalign.AlignmentFrame(root, alignGlobal(p08684_sequence, q16802_sequence, blosum62_matrix, -10), "BLOSUM62 matrix")
-tkalign.AlignmentFrame(root, alignGlobal(p08684_sequence, q16802_sequence, blosum62_matrix, -12), "BLOSUM62 matrix")
 
-tkalign.AlignmentFrame(root, alignGlobal(p08684_sequence, q16802_sequence, p450_supplied_matrix, -2), "P450 matrix")
-tkalign.AlignmentFrame(root, alignGlobal(p08684_sequence, q16802_sequence, p450_supplied_matrix, -4), "P450 matrix")
-tkalign.AlignmentFrame(root, alignGlobal(p08684_sequence, q16802_sequence, p450_supplied_matrix, -6), "P450 matrix")
-tkalign.AlignmentFrame(root, alignGlobal(p08684_sequence, q16802_sequence, p450_supplied_matrix, -8), "P450 matrix")
-tkalign.AlignmentFrame(root, alignGlobal(p08684_sequence, q16802_sequence, p450_supplied_matrix, -10), "P450 matrix")
-tkalign.AlignmentFrame(root, alignGlobal(p08684_sequence, q16802_sequence, p450_supplied_matrix, -12), "P450 matrix")
+for gap_penalty in range(-2, -14, -2):
+    tkalign.AlignmentFrame(root, alignGlobal(p08684_sequence, q16802_sequence, blosum62_matrix, gap_penalty), "BLOSUM62 matrix")
+
+for gap_penalty in range(-2, -14, -2):    
+    tkalign.AlignmentFrame(root, alignGlobal(p08684_sequence, q16802_sequence, p450_supplied_matrix, gap_penalty), "P450 matrix")
+
 root.mainloop()  
 
 
