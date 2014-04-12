@@ -5,6 +5,9 @@ Created on 12/04/2014
 '''
 
 from lxml import etree
+import threading as thread
+from sequence import *
+
 
 class AlignmentCollection():
     '''
@@ -52,3 +55,19 @@ class AlignmentCollection():
         xmlRoot = etree.fromstring(open(xmlPath).read())
         transRoot = transform(xmlRoot)
         return etree.tostring(transRoot)
+
+
+class AlignmentThread (thread.Thread):
+    
+    def __init__(self, seqA, seqB, matrix_filename, gap_penalty, alphabet =  DNA_Alphabet):
+        thread.Thread.__init__(self)
+        self.seqA = seqA
+        self.seqB = seqB
+        self.matrix = readSubstMatrix(matrix_filename, alphabet)
+        self.gap_penalty = gap_penalty
+        self.result_alignment =  None
+    
+    def run(self):
+        print "Starting " + self.name
+        self.result_alignment = alignGlobal(self.seqA, self.seqB, self.matrix, self.gap_penalty)
+        print self.name, " completed"
