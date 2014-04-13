@@ -24,16 +24,24 @@ print "number of cells in alignment matrix = ", len(seqA) * len(seqB)
 
 threads = []
 
+print "seqA= ", len(seqA)
+print "seqB= ", len(seqB)
+
 for gap_penalty in range(-1, -10, -1):
-    thread1 = AlignmentThread(deepcopy(seqA), deepcopy(seqB), "dna.matrix", gap_penalty)
-    thread1.start()
-    threads.append(thread1)
-    thread2 = AlignmentThread(deepcopy(seqA), deepcopy(seqB), "dna.matrix2", gap_penalty)
-    thread2.start()
-    threads.append(thread2)
-    thread3 = AlignmentThread(deepcopy(seqA), deepcopy(seqB), "dna.matrix3", gap_penalty)
-    thread3.start()
-    threads.append(thread3)
+    print "processing gap penalty ", gap_penalty
+    alignments.add_alignment(alignGlobal(seqA, seqB, dna_matrix, gap_penalty))
+    alignments.add_alignment(alignGlobal(seqA, seqB, dna_matrix2, gap_penalty))
+    alignments.add_alignment(alignGlobal(seqA, seqB, dna_matrix3, gap_penalty))
+    
+#     thread1 = AlignmentThread(deepcopy(seqA), deepcopy(seqB), "dna.matrix", gap_penalty)
+#     thread1.start()
+#     threads.append(thread1)
+#     thread2 = AlignmentThread(deepcopy(seqA), deepcopy(seqB), "dna.matrix2", gap_penalty)
+#     thread2.start()
+#     threads.append(thread2)
+#     thread3 = AlignmentThread(deepcopy(seqA), deepcopy(seqB), "dna.matrix3", gap_penalty)
+#     thread3.start()
+#     threads.append(thread3)
 
 
 # wait for all threads to finish
@@ -45,7 +53,7 @@ for gap_penalty in range(-1, -10, -1):
 #    alignments.add_alignment(t.result_alignment)
 
 
-#alignments.dump_xml_and_html("question_7_alignments")
+alignments.dump_xml_and_html("question_7_alignments")
 
 
 #root = tk.Tk()

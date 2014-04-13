@@ -24,6 +24,10 @@ th {
     background-color:#00FF00;
 }
 
+.stop_codon {
+    background-color:#0000FF;
+}
+
 .seq_name {
     font-weight:bold;
 }

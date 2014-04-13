@@ -65,12 +65,40 @@
         <td class="atg_codon">A</td>
     </xsl:template>
 
+    <xsl:template match="T[@codon = 'start']">
+        <td class="atg_codon">T</td>
+    </xsl:template>
+
+    <xsl:template match="G[@codon = 'start']">
+        <td class="atg_codon">G</td>
+    </xsl:template>
+
     <xsl:template match="T[preceding-sibling::node()[1][@codon = 'start']]">
         <td class="atg_codon">T</td>
     </xsl:template>
 
     <xsl:template match="G[preceding-sibling::node()[2][@codon = 'start']]">
         <td class="atg_codon">G</td>
+    </xsl:template>
+
+    <xsl:template match="T[@codon = 'stop']">
+        <td class="stop_codon">T</td>
+    </xsl:template>
+
+    <xsl:template match="A[preceding-sibling::node()[1][@codon = 'stop']]">
+        <td class="stop_codon">A</td>
+    </xsl:template>
+
+    <xsl:template match="A[preceding-sibling::node()[2][@codon = 'stop']]">
+        <td class="stop_codon">A</td>
+    </xsl:template>
+
+    <xsl:template match="G[preceding-sibling::node()[1][@codon = 'stop']]">
+        <td class="stop_codon">G</td>
+    </xsl:template>
+
+    <xsl:template match="G[preceding-sibling::node()[2][@codon = 'stop']]">
+        <td class="stop_codon">G</td>
     </xsl:template>
 
     <xsl:template match="A | C | T | G">

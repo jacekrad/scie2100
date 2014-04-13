@@ -588,6 +588,16 @@ class Alignment():
                 else:
                     if seq_length > (position + 2) and sym == 'A' and sequence[position + 1] == 'T' and sequence[position + 2] == 'G':
                         xml += "<" + sym + " codon=\"start\" />"
+                    elif seq_length > (position + 2) and sym == 'G' and sequence[position + 1] == 'T' and sequence[position + 2] == 'G':
+                        xml += "<" + sym + " codon=\"start\" />"
+                    elif seq_length > (position + 2) and sym == 'T' and sequence[position + 1] == 'T' and sequence[position + 2] == 'G':
+                        xml += "<" + sym + " codon=\"start\" />"
+                    elif seq_length > (position + 2) and sym == 'T' and sequence[position + 1] == 'A' and sequence[position + 2] == 'G':
+                        xml += "<" + sym + " codon=\"stop\" />"
+                    elif seq_length > (position + 2) and sym == 'T' and sequence[position + 1] == 'G' and sequence[position + 2] == 'A':
+                        xml += "<" + sym + " codon=\"stop\" />"
+                    elif seq_length > (position + 2) and sym == 'T' and sequence[position + 1] == 'A' and sequence[position + 2] == 'A':
+                        xml += "<" + sym + " codon=\"stop\" />"
                     else:
                         xml += "<" + sym + "/>"
                 position += 1

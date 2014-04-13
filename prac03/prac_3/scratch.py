@@ -30,12 +30,12 @@ dna_matrix = readSubstMatrix("dna.matrix", DNA_Alphabet)
 
 
 # question 6
-#alignment = alignGlobal(seqA, seqB, dna_matrix, -4)
+aln = alignGlobal(seqA, seqB, dna_matrix, -4)
 
 
 #print alignment
 
-#alignment.writeHTML("h1n1.html")
+aln.writeHTML("h1n1.html")
 
 #alignGlobal(seqA, seqB, dna_matrix, -2).writeHTML("matrix1-gap2.html")
 #alignGlobal(seqA, seqB, dna_matrix, -4).writeHTML("matrix1-gap4.html")
