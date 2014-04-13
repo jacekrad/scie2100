@@ -322,6 +322,7 @@ class Alignment():
 
     
     def __init__(self, seqs):
+        self.matrix_name = None
         self.gap_penalty = None       
         self.alignlen = -1
         self.seqs = seqs
@@ -467,10 +468,10 @@ class Alignment():
         for i in range(len(self.seqs)):
             for j in range(len(self.seqs)):
                 if i != j:
-                    seqA = self.seqs[i]
-                    seqB = self.seqs[j]
+                    HQ659871_1 = self.seqs[i]
+                    JX416721_1 = self.seqs[j]
                     # Calculate the fractional distance (p) first
-                    # The two sequences of interest are in seqA and seqB
+                    # The two sequences of interest are in HQ659871_1 and JX416721_1
                     p = 0  # ?
                     L = 0
                     D = 0
@@ -570,46 +571,66 @@ class Alignment():
         fh.write('</rows></sequence-alignment>\n')
         fh.close()
         
-    def toXML(self):
+    def toXML(self, reading_frame = 0):
         """ Attempt to dump an XML representation of this alignment
         """
+
         xml = ""
-        xml += "<sequence-alignment gap-penalty=\"" + str(self.gap_penalty) + "\">\n<sequences>\n"
+        
+        # output reading from for DNA alphabets only
+        if self.alphabet == DNA_Alphabet:
+            xml += "<sequence-alignment gap-penalty=\"" + str(self.gap_penalty) + "\"" \
+                + " matrix-name=\"" + str(self.matrix_name) + "\"" \
+                + " reading-frame=\"" + str(reading_frame) + "\">"
+        else:
+            xml += "<sequence-alignment gap-penalty=\"" + str(self.gap_penalty) + "\"" \
+                + " matrix-name=\"" + str(self.matrix_name) + "\">"
+        xml += "<sequences>\n"
         maxNameLength =  self.getnamelen()
         xml += ''.ljust(maxNameLength) + ' '
         for sequence in self.seqs:
             xml += "<sequence>\n"
             xml += "<name>" + sequence.name.ljust(maxNameLength) + "</name>\n"
             seq_length = len(sequence)
-            position = 0 
+            position = 0
+            sof = False # start of frame flag
             for sym in sequence:
+                if ((position - reading_frame) % 3) == 0:
+                    sof = True
+                else:
+                    sof = False
                 if sym == '-':
                     xml += "<GAP/>"
+                elif sof and seq_length > (position + 2) and \
+                        sym == 'A' and sequence[position + 1] == 'T' and sequence[position + 2] == 'G':
+                    xml += "<" + sym + " codon=\"start\" />"
+                elif sof and seq_length > (position + 2) and \
+                        sym == 'G' and sequence[position + 1] == 'T' and sequence[position + 2] == 'G':                        
+                    xml += "<" + sym + " codon=\"start\" />"
+                elif sof and seq_length > (position + 2) and \
+                        sym == 'T' and sequence[position + 1] == 'T' and sequence[position + 2] == 'G':
+                    xml += "<" + sym + " codon=\"start\" />"
+                elif sof and seq_length > (position + 2) and \
+                        sym == 'T' and sequence[position + 1] == 'A' and sequence[position + 2] == 'G':
+                    xml += "<" + sym + " codon=\"stop\" />"
+                elif sof and seq_length > (position + 2) and \
+                        sym == 'T' and sequence[position + 1] == 'G' and sequence[position + 2] == 'A':
+                    xml += "<" + sym + " codon=\"stop\" />"
+                elif sof and seq_length > (position + 2) and \
+                        sym == 'T' and sequence[position + 1] == 'A' and sequence[position + 2] == 'A':
+                    xml += "<" + sym + " codon=\"stop\" />"
                 else:
-                    if seq_length > (position + 2) and sym == 'A' and sequence[position + 1] == 'T' and sequence[position + 2] == 'G':
-                        xml += "<" + sym + " codon=\"start\" />"
-                    elif seq_length > (position + 2) and sym == 'G' and sequence[position + 1] == 'T' and sequence[position + 2] == 'G':
-                        xml += "<" + sym + " codon=\"start\" />"
-                    elif seq_length > (position + 2) and sym == 'T' and sequence[position + 1] == 'T' and sequence[position + 2] == 'G':
-                        xml += "<" + sym + " codon=\"start\" />"
-                    elif seq_length > (position + 2) and sym == 'T' and sequence[position + 1] == 'A' and sequence[position + 2] == 'G':
-                        xml += "<" + sym + " codon=\"stop\" />"
-                    elif seq_length > (position + 2) and sym == 'T' and sequence[position + 1] == 'G' and sequence[position + 2] == 'A':
-                        xml += "<" + sym + " codon=\"stop\" />"
-                    elif seq_length > (position + 2) and sym == 'T' and sequence[position + 1] == 'A' and sequence[position + 2] == 'A':
-                        xml += "<" + sym + " codon=\"stop\" />"
-                    else:
-                        xml += "<" + sym + "/>"
+                    xml += "<" + sym + "/>"
                 position += 1
             xml += "</sequence>\n"
         xml += "</sequences></sequence-alignment>\n"
         return xml
 
-def alignGlobal(seqA, seqB, substMatrix, gap=-1):
-    """ Align seqA with seqB using the Needleman-Wunsch
+def alignGlobal(HQ659871_1, JX416721_1, substMatrix, gap=-1):
+    """ Align HQ659871_1 with JX416721_1 using the Needleman-Wunsch
     (global) algorithm. subsMatrix is the substitution matrix to use and
     gap is the linear gap penalty to use. """
-    lenA, lenB = len(seqA), len(seqB)
+    lenA, lenB = len(HQ659871_1), len(JX416721_1)
     # Create the scoring matrix (S)
     S = numpy.zeros((lenA + 1, lenB + 1))
     # Fill the first row and column of S with multiples of the gap penalty
@@ -622,7 +643,7 @@ def alignGlobal(seqA, seqB, substMatrix, gap=-1):
     #  that ends at sequence indices i and j, for A and B, resp.)
     for i in range(1, lenA + 1):
         for j in range(1, lenB + 1):
-            match = S[i - 1, j - 1] + substMatrix.get(seqA[i - 1], seqB[j - 1])
+            match = S[i - 1, j - 1] + substMatrix.get(HQ659871_1[i - 1], JX416721_1[j - 1])
             delete = S[i - 1, j  ] + gap
             insert = S[i  , j - 1] + gap
             S[i, j] = max([match, delete, insert])
@@ -642,19 +663,19 @@ def alignGlobal(seqA, seqB, substMatrix, gap=-1):
     while i > 0 and j > 0:
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if S[i, j] == S[i - 1, j] + gap:
-            alignA = seqA[i - 1] + alignA
+            alignA = HQ659871_1[i - 1] + alignA
             alignB = "-" + alignB
             i -= 1
         elif S[i, j] == S[i, j - 1] + gap: 
             # Got here by a gap in sequence A (go left)
             alignA = "-" + alignA
-            alignB = seqB[j - 1] + alignB
+            alignB = JX416721_1[j - 1] + alignB
             j -= 1
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         else:
             # Got here by aligning the bases (go diagonally)
-            alignA = seqA[i - 1] + alignA
-            alignB = seqB[j - 1] + alignB
+            alignA = HQ659871_1[i - 1] + alignA
+            alignB = JX416721_1[j - 1] + alignB
             i -= 1
             j -= 1
     # Fill in the rest of the alignment if it begins with gaps
@@ -662,7 +683,7 @@ def alignGlobal(seqA, seqB, substMatrix, gap=-1):
     while i > 0:
         # Go up
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        alignA = seqA[i - 1] + alignA
+        alignA = HQ659871_1[i - 1] + alignA
         alignB = "-" + alignB
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         i = i - 1
@@ -670,18 +691,19 @@ def alignGlobal(seqA, seqB, substMatrix, gap=-1):
         # Go left
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         alignA = "-" + alignA
-        alignB = seqB[j - 1] + alignB
+        alignB = JX416721_1[j - 1] + alignB
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         j = j - 1
-    alignment = Alignment([Sequence(alignA, seqA.alphabet, seqA.name, gappy=True), Sequence(alignB, seqB.alphabet, seqB.name, gappy=True)])
+    alignment = Alignment([Sequence(alignA, HQ659871_1.alphabet, HQ659871_1.name, gappy=True), Sequence(alignB, JX416721_1.alphabet, JX416721_1.name, gappy=True)])
     alignment.gap_penalty = gap # save the gap for future analysis
+    alignment.matrix_name = substMatrix.name
     return alignment
 
-def alignLocal(seqA, seqB, substMatrix, gap=-1):
-    """ Align seqA with seqB using the Smith-Waterman
+def alignLocal(HQ659871_1, JX416721_1, substMatrix, gap=-1):
+    """ Align HQ659871_1 with JX416721_1 using the Smith-Waterman
     (local) algorithm. subsMatrix is the substitution matrix to use and
     gap is the linear gap penalty to use. """
-    lenA, lenB = len(seqA), len(seqB)
+    lenA, lenB = len(HQ659871_1), len(JX416721_1)
     # Create the scoring matrix (S)
     S = numpy.zeros((lenA + 1, lenB + 1))
     # Fill the first row and column of S with multiples of the gap penalty
@@ -694,7 +716,7 @@ def alignLocal(seqA, seqB, substMatrix, gap=-1):
     #  that ends at sequence indices i and j, for A and B, resp.)
     for i in range(1, lenA + 1):
         for j in range(1, lenB + 1):
-            match = S[i - 1, j - 1] + substMatrix.get(seqA[i - 1], seqB[j - 1])
+            match = S[i - 1, j - 1] + substMatrix.get(HQ659871_1[i - 1], JX416721_1[j - 1])
             delete = S[i - 1, j  ] + gap
             insert = S[i  , j - 1] + gap
             #!!!!! one difference to globa
@@ -717,22 +739,25 @@ def alignLocal(seqA, seqB, substMatrix, gap=-1):
     while i > 0 and j > 0 and S[i, j] > 0:
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         if S[i, j] == S[i - 1, j] + gap:
-            alignA = seqA[i - 1] + alignA
+            alignA = HQ659871_1[i - 1] + alignA
             alignB = "-" + alignB
             i -= 1
         elif S[i, j] == S[i, j - 1] + gap: 
             alignA = "-" + alignA
-            alignB = seqB[j - 1] + alignB
+            alignB = JX416721_1[j - 1] + alignB
             j -= 1            # alignA = ?
         # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~            
         else:
             # Got here by aligning the bases (go diagonally)
-            alignA = seqA[i - 1] + alignA
-            alignB = seqB[j - 1] + alignB
+            alignA = HQ659871_1[i - 1] + alignA
+            alignB = JX416721_1[j - 1] + alignB
             i -= 1
             j -= 1
-    return Alignment([Sequence(alignA, seqA.alphabet, seqA.name, gappy=True), Sequence(alignB, seqB.alphabet, seqB.name, gappy=True)])
-
+    alignment = Alignment([Sequence(alignA, HQ659871_1.alphabet, HQ659871_1.name, gappy=True), Sequence(alignB, JX416721_1.alphabet, JX416721_1.name, gappy=True)])
+    alignment.gap_penalty = gap # save the gap for future analysis
+    alignment.matrix_name = substMatrix.name
+    return alignment
+    
 
 def readClustal(string, alphabet):
     """ Read a ClustalW2 alignment in the given string and return as an
@@ -773,6 +798,7 @@ class SubstMatrix():
     def __init__(self, alphabet, scoremat={}):
         self.scoremat = scoremat.copy()
         self.alphabet = alphabet
+        self.name = "nonname"
 
     def _getkey(self, sym1, sym2):
         """ Construct canonical (unordered) key for two symbols """
@@ -818,6 +844,7 @@ class SubstMatrix():
 def readSubstMatrix(filename, alphabet):
     """ Read in the substitution matrix stored in the given file. """
     mat = SubstMatrix(alphabet)
+    mat.name = filename
     fh = open(filename, 'r')
     data = fh.read()
     fh.close()
@@ -1053,16 +1080,16 @@ def runBLAST(sequence, program='blastp', database='uniprotkb', exp='1e-1'):
     return ids
 
 if __name__ == '__main__':
-    seqA = Sequence('THISLINE', Protein_Alphabet, name='SeqA')
-    seqB = Sequence('ISALIGNED', Protein_Alphabet, name='SeqB')
+    HQ659871_1 = Sequence('THISLINE', Protein_Alphabet, name='SeqA')
+    JX416721_1 = Sequence('ISALIGNED', Protein_Alphabet, name='SeqB')
     smat = readSubstMatrix('blosum62.matrix', Protein_Alphabet)
-    aln_global = alignGlobal(seqA, seqB, smat, -8)
+    aln_global = alignGlobal(HQ659871_1, JX416721_1, smat, -8)
     print aln_global
-    aln_global = alignGlobal(seqA, seqB, smat, -4)
+    aln_global = alignGlobal(HQ659871_1, JX416721_1, smat, -4)
     print aln_global
-    aln_local = alignLocal(seqA, seqB, smat, -8)
+    aln_local = alignLocal(HQ659871_1, JX416721_1, smat, -8)
     print aln_local
-    aln_local = alignLocal(seqA, seqB, smat, -4)
+    aln_local = alignLocal(HQ659871_1, JX416721_1, smat, -4)
     print aln_local
 
 

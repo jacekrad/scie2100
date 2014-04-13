@@ -23,7 +23,14 @@
     <xsl:template match="sequence-alignment">
         <tbody class="alignment">
             <tr>
-                <th>&#10;</th>
+                <th class="desc">
+                    <xsl:if test="@reading-frame">
+                        <xsl:text>Frame: </xsl:text>
+                        <xsl:value-of select="@reading-frame"/>
+                        <xsl:text>;</xsl:text>
+                    </xsl:if>
+                    <xsl:value-of select="@matrix-name"/>
+                </th>
                 <xsl:for-each select="sequences/sequence[1]/node()">
                     <th>
                         <xsl:value-of select="floor((position() mod 1000) div 100)"/>
@@ -100,8 +107,13 @@
     <xsl:template match="G[preceding-sibling::node()[2][@codon = 'stop']]">
         <td class="stop_codon">G</td>
     </xsl:template>
+    
+    <xsl:template match="M">
+        <td class="atg_codon">M</td>
+    </xsl:template>    
 
-    <xsl:template match="A | C | T | G">
+    <!-- fallback match of non-special letters -->
+    <xsl:template match="A | B| C | D | E | F | G | H | I | J | K | L | N | O | P | Q | R | S| T | U | V | X | Y | Z">
         <td class="alignment">
             <xsl:value-of select="local-name()"/>
         </td>

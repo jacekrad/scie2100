@@ -23,24 +23,24 @@ aln = Alignment([s1, s2])
 
 print aln
 
-seqA = getSequence("HQ659871.1", "genbank")
-seqB = getSequence("JX416721.1", "genbank")
+HQ659871_1 = getSequence("HQ659871.1", "genbank")
+JX416721_1 = getSequence("JX416721.1", "genbank")
 
 dna_matrix = readSubstMatrix("dna.matrix", DNA_Alphabet)
 
 
 # question 6
-aln = alignGlobal(seqA, seqB, dna_matrix, -4)
+aln = alignGlobal(HQ659871_1, JX416721_1, dna_matrix, -4)
 
 
 #print alignment
 
 aln.writeHTML("h1n1.html")
 
-#alignGlobal(seqA, seqB, dna_matrix, -2).writeHTML("matrix1-gap2.html")
-#alignGlobal(seqA, seqB, dna_matrix, -4).writeHTML("matrix1-gap4.html")
-#alignGlobal(seqA, seqB, dna_matrix, -6).writeHTML("matrix1-gap6.html")
-#alignGlobal(seqA, seqB, dna_matrix, -8).writeHTML("matrix1-gap8.html")
+#alignGlobal(HQ659871_1, JX416721_1, dna_matrix, -2).writeHTML("matrix1-gap2.html")
+#alignGlobal(HQ659871_1, JX416721_1, dna_matrix, -4).writeHTML("matrix1-gap4.html")
+#alignGlobal(HQ659871_1, JX416721_1, dna_matrix, -6).writeHTML("matrix1-gap6.html")
+#alignGlobal(HQ659871_1, JX416721_1, dna_matrix, -8).writeHTML("matrix1-gap8.html")
 
 # question 8
 
