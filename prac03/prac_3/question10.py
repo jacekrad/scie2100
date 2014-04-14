@@ -28,8 +28,8 @@ for matrix_name in matrix_names:
 P08684 = readFastaFile(p08684_filename)[0]
 Q16802 = readFastaFile(q16802_filename)[0]
 
-local_alignments = AlignmentCollection("question 7 local")
-global_alignments = AlignmentCollection("question 7 global")
+local_alignments = AlignmentCollection("question 10 local")
+global_alignments = AlignmentCollection("question 10 global")
 
 for matrix in matrices:
     print "processing matrix:", matrix.name

@@ -10,7 +10,7 @@ from alignments import AlignmentCollection, AlignmentThread
 HQ659871_1 = getSequence("HQ659871.1", "genbank")
 JX416721_1 = getSequence("JX416721.1", "genbank")
 
-matrix_names = ["dna.matrix", "dna.matrix2", "dna.matrix3", "dna.matrix4", "dna.matrix.unknown"]
+matrix_names = ["dna.matrix", "dna.matrix4", "dna.matrix.unknown"]
 
 # list of matrices though which we shall iterate to obtain various alignments
 matrices = []
@@ -31,11 +31,11 @@ print "JX416721_1 = ", len(JX416721_1)
 
 for matrix in matrices:
     print "processing matrix:", matrix.name
-    for gap_penalty in range(-1, -20, -1):
+    for gap_penalty in range(-7, -10, -1):
         local_alignments.add_alignment(alignLocal(HQ659871_1, JX416721_1, matrix, gap_penalty))
         global_alignments.add_alignment(alignGlobal(HQ659871_1, JX416721_1, matrix, gap_penalty))
     
-local_alignments.dump_xml_and_html("question_7_local_alignments")
-global_alignments.dump_xml_and_html("question_7_global_alignments")
+local_alignments.dump_xml_and_html("short_question_7_local_alignments")
+global_alignments.dump_xml_and_html("short_question_7_global_alignments")
 
 
