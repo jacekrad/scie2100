@@ -16,9 +16,9 @@ import gzip
     http://www.ebi.ac.uk/Tools/webservices/tutorials/06_programming/python/rest/urllib
     """
 
-__ebiUrl__ =        'http://www.ebi.ac.uk/Tools/'               # Use UQ mirror when available
-__ebiGOUrl__ =      'http://www.ebi.ac.uk/QuickGO/'             # Use UQ mirror when available
-__uniprotUrl__ =    'http://www.uniprot.org/'                   # 
+__ebiUrl__ = 'http://www.ebi.ac.uk/Tools/'  # Use UQ mirror when available
+__ebiGOUrl__ = 'http://www.ebi.ac.uk/QuickGO/'  # Use UQ mirror when available
+__uniprotUrl__ = 'http://www.uniprot.org/'  # 
 
 def fetch(entryId, dbName='uniprotkb', format='fasta'):
     """
@@ -51,7 +51,7 @@ def search(query, dbName='uniprot', format='list', limit=100):
     """
     if dbName.startswith('uniprot'):
         # Construct URL
-        if limit == None: # no limit to number of results returned
+        if limit == None:  # no limit to number of results returned
             url = __uniprotUrl__ + dbName + '/?format=' + format + '&query=' + query
         else:
             url = __uniprotUrl__ + dbName + '/?format=' + format + '&limit=' + str(limit) + '&query=' + query
@@ -74,7 +74,7 @@ def search(query, dbName='uniprot', format='list', limit=100):
         try:
             data = urllib2.urlopen(url).read()
             words = data.split("</Id>")
-            words = [w[w.find("<Id>")+4:] for w in words[:-1]]
+            words = [w[w.find("<Id>") + 4:] for w in words[:-1]]
             if format == 'list':
                 return words
             elif format == 'fasta' and len(words) > 0:
@@ -109,11 +109,11 @@ def idmap(identifiers, frm='ACC', to='P_REFSEQ_AC', format='tab', reverse=False)
     # construct query by concatenating the list of identifiers
     if isinstance(identifiers, str):
         query = identifiers.strip()
-    else: # assume it is a list of strings
+    else:  # assume it is a list of strings
         query = ''
         for id in identifiers:
             query = query + id.strip() + ' '
-        query = query.strip() # remove trailing spaces
+        query = query.strip()  # remove trailing spaces
     params = {
         'from' : frm,
         'to' : to,
@@ -140,7 +140,7 @@ http://www.ebi.ac.uk/QuickGO/WebServices.html
 Note that this service can be slow for queries involving a large number of entries.
 """
 
-def getGOReport(positives, background = None, database = 'UniProtKB'):
+def getGOReport(positives, background=None, database='UniProtKB'):
     """ Generate a complete GO term report for a set of genes (positives).
         Each GO term is also assigned an enrichment p-value (on basis of background, if provided).
         Returns a list of tuples (GO_Term_ID[str], Foreground_no[int], Term_description[str]) with no background, OR
@@ -171,7 +171,7 @@ def getGOReport(positives, background = None, database = 'UniProtKB'):
         for t in term_set:
             term_cnt[t] = fg_list.count(t)
         sorted_cnt = sorted(term_cnt.items(), key=lambda v: v[1], reverse=True)
-    else: # a background is provided
+    else:  # a background is provided
         for t in term_set:
             fg_hit = fg_list.count(t)
             bg_hit = bg_list.count(t)
@@ -184,7 +184,7 @@ def getGOReport(positives, background = None, database = 'UniProtKB'):
     for t in sorted_cnt:
         defin = getGODef(t[0])
         if background != None:
-            ret.append((t[0], t[1][2] * len(term_set), t[1][0], t[1][0]+t[1][1], defin['name']))
+            ret.append((t[0], t[1][2] * len(term_set), t[1][0], t[1][0] + t[1][1], defin['name']))
         else:
             ret.append((t[0], t[1], defin['name']))
     return ret
@@ -198,21 +198,21 @@ def getGODef(goterm):
     url = __ebiGOUrl__ + 'GTerm?format=obo&id=' + goterm
     # Get the entry: fill in the fields specified below
     try:
-        entry={'id': None, 'name': None, 'def': None}
+        entry = {'id': None, 'name': None, 'def': None}
         data = urllib2.urlopen(url).read()
         for row in data.splitlines():
             index = row.find(':')
             if index > 0 and len(row[index:]) > 1:
                 field = row[0:index].strip()
-                value = row[index+1:].strip(' "') # remove spaces and quotation marks
-                if field in entry.keys():         # check if we need this field
-                    if entry[field] == None:      # check if not yet assigned
+                value = row[index + 1:].strip(' "')  # remove spaces and quotation marks
+                if field in entry.keys():  # check if we need this field
+                    if entry[field] == None:  # check if not yet assigned
                         entry[field] = value
         return entry
     except urllib2.HTTPError, ex:
         raise RuntimeError(ex.read())
 
-def getGOTerms(genes, database='UniProtKB', completeAnnot = False):
+def getGOTerms(genes, database='UniProtKB', completeAnnot=False):
     """
     Retrieve all GO terms for a given set of genes (or single gene).
     database: use specified database, e.g. 'UniProtKB', 'UniGene', or 'Ensembl'
@@ -234,7 +234,7 @@ def getGOTerms(genes, database='UniProtKB', completeAnnot = False):
         if query == None:
             query = gene
         elif len(query) < queryLength:
-            query += ','+gene
+            query += ',' + gene
         else:
             queries.append(query)
             query = gene
@@ -320,9 +320,9 @@ def getGenes(goterms, database='UniProtKB', taxo=None):
 
 class EBI(object):
     
-    __email__ =         'anon@uq.edu.au'                            # to whom emails about jobs should go
-    __ebiServiceUrl__ = 'http://www.ebi.ac.uk/Tools/services/rest/' # Use UQ mirror when available
-    __checkInterval__ = 2                                           # how long to wait between checking job status
+    __email__ = 'anon@uq.edu.au'  # to whom emails about jobs should go
+    __ebiServiceUrl__ = 'http://www.ebi.ac.uk/Tools/services/rest/'  # Use UQ mirror when available
+    __checkInterval__ = 2  # how long to wait between checking job status
 
     def __init__(self, service=None):
         """ Initialise service session. 
@@ -446,17 +446,17 @@ class EBI(object):
         else:
             return results
 
-if __name__=='__main__':
+if __name__ == '__main__':
     # Examples
-    #seq = fetch('NC_004952', 'refseqn', 'fasta')
-    #print seq
-    #rows = search('organism:10090+AND+Sumo', 'uniprot', format = 'list') # find proteins in mouse (taxonomic id 10090) that match Sumo
-    #print rows
-    rows = search('CYP1A1[Gene]+AND+Cavia+Cobaya+[Organism]', 'refseq:protein', format = 'fasta') # find proteins in NCBI's refseq (note different query syntax)
-    #print rows
+    # seq = fetch('NC_004952', 'refseqn', 'fasta')
+    # print seq
+    # rows = search('organism:10090+AND+Sumo', 'uniprot', format = 'list') # find proteins in mouse (taxonomic id 10090) that match Sumo
+    # print rows
+    rows = search('CYP1A1[Gene]+AND+Cavia+Cobaya+[Organism]', 'refseq:protein', format='fasta')  # find proteins in NCBI's refseq (note different query syntax)
+    # print rows
     print idmap(rows[1:10])
-    #mygo = getGOTerms(['Q9SJN0','P63166'])
-    #mygo = getGOReport(['P20719','P63166','Q9SJN0',])
-    #print mygo#['P63166']    # all terms associated with one of the genes
-    #print getGODef('GO:0002080')['name']
-    #print getGenes(['GO:0002080'], taxo=9606)
+    # mygo = getGOTerms(['Q9SJN0','P63166'])
+    # mygo = getGOReport(['P20719','P63166','Q9SJN0',])
+    # print mygo#['P63166']    # all terms associated with one of the genes
+    # print getGODef('GO:0002080')['name']
+    # print getGenes(['GO:0002080'], taxo=9606)
