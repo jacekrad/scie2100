@@ -1,0 +1,35 @@
+
+
+td {
+    font-family:monospace;
+    border:1px solid #CCC;
+}
+
+th {
+    font-family:monospace;
+    font-size:smaller;
+    color:#DDD;
+}
+
+.desc {
+    color: blue;
+    text-align:left;
+}
+
+.gap {
+    background-color:#FF8888;
+}
+
+.atg_codon {
+    background-color:#00FF00;
+}
+
+.stop_codon {
+    background-color:#0000FF;
+}
+
+.seq_name {
+    font-weight:bold;
+}
+
+.alignment {}
