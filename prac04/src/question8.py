@@ -17,14 +17,14 @@ import time
 
 #alignment = readClustalFile("myAlign.aln", DNA_Alphabet)
 
-strict_regexp = Regexp("[CT]A[TA]{5}AG")
-flexi_regexp = Regexp("[CT]A[TA]{5}A")
+strict_regexp = Regexp("[CT]TA[TA]{5}AG")
+flexi_regexp = Regexp("[CT]TA[TA]{5}AG")
 
 sequences = readFastaFile("motifSearch.fasta", DNA_Alphabet)
 
 for sequence in sequences:
     result = flexi_regexp.search(sequence)
-    print result
+    print sequence.name, result
 
 
 # #qeuestion 8
