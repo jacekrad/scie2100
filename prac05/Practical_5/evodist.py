@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 
 from sequence import *
 
-aln = readClustalFile('/Users/samirlal/Desktop/cyp1a1.aln', Protein_Alphabet)
+aln = readClustalFile('cyp1a1.aln', Protein_Alphabet)
+#aln = readClustalFile('cyp_mouse.aln', Protein_Alphabet)
 d = aln.calcDistances('fractional')
 
 fig, ax = plt.subplots()
