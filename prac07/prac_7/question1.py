@@ -6,22 +6,35 @@ Created on 13/05/2014
 from sequence import *
 
 fasta_files = ["Genome1.fasta", "Genome2.fasta", "Genome3.fasta"]
-gc_counts = {}
+    
+def get_gc_count(sequence):
+    return sequence.count('G') + sequence.count('C')
 
+def get_gc_fraction(sequence):
+    return round(float(get_gc_count(sequence)) / len(sequence), 2)
+
+def get_mean(values):
+    return round(float(sum(values)) / len(values), 2)
+
+def get_standard_deviation(values):
+    vals = []
+    mean = get_mean(values)
+    for i in range(len(values)):
+        vals.append((values[i] - mean) ** 2)
+    standard_deviation = math.sqrt((1 / float(len(values))) * sum(vals))
+    return round(standard_deviation, 2)
+
+#dictionary in which we'll save the contigs
+contigs = {}
+ 
 for fasta_file in fasta_files:
-    print "======================================================================="
-    print fasta_file
+    contig_list = []
+    contigs.update({fasta_file:contig_list})
     sequences = readFastaFile(fasta_file, DNA_Alphabet)
-    genome_total = 0
-    genome_gc_count = 0 
     for sequence in sequences:
-        total = 0
-        gc_count = 0
-        for letter in sequence.sequence:
-            total += 1
-            if letter == 'G' or letter == "C":
-                gc_count += 1
-        print sequence.name, "%.4f" % (float(gc_count) / float(total))
-        genome_total += total
-        genome_gc_count += gc_count
-    print fasta_file, " total:", (float(genome_gc_count) / float(genome_total))
+        contig_list.append(get_gc_fraction(sequence.sequence))
+    mean = get_mean(contig_list)
+    standard_deviation = get_standard_deviation(contig_list)
+    upper_bound = mean + (2 * standard_deviation)
+    lower_bound = mean - (2 * standard_deviation)
+    print fasta_file, ": ", mean, standard_deviation, upper_bound, lower_bound
