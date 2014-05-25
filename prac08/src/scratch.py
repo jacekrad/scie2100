@@ -36,7 +36,7 @@ diff_b = [avg_b[i] - avg_a[i] for i in range(len(avg_a))]
 calls_a4 = checkSupport(calls_a3, diff_a)
 calls_b4 = checkSupport(calls_b3, diff_b)
 
-print myprot
-print "     ", makesstr(calls_a4, 'H')
-print "     ", makesstr(calls_b4, 'E')
+print " ", myprot
+print "alpha: ", makesstr(calls_a4, 'H')
+print " beta: ", makesstr(calls_b4, 'E')
 

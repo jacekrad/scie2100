@@ -79,7 +79,7 @@ def markAvgAbove(scores, width=4, call_avg=100.0):
                 above[j] = True 
     return above
 
-def extendDownstream(scores, calls, width=4, alpha=True, prolines):
+def extendDownstream(scores, calls, prolines, width=4, alpha=True):
     """ Create a list of booleans that mark all positions that are contained 
         in supplied calls list AND extend this list downstream containing a 
         specified width average of 100. 
@@ -89,11 +89,17 @@ def extendDownstream(scores, calls, width=4, alpha=True, prolines):
     order = range(0, len(calls) - 1, +1)  # we are extending calls downstream
     cnt = 0
     for i in order:  # extend to the right
+        # proline
+        if alpha and i < (len(calls) - 5) and prolines[i + 5]:
+            for j in range(0, 6):
+                calls[i + j] = False
+            cnt = 0
+            sum = 0.0
         if calls[i]:  # to extend a call is required in the first place
             cnt += 1
             sum += scores[i]  # keep a sum to be able to average
             if cnt >= width:  # only average over a width
-                sum -= scores[i - width + 1]
+                sum -= scores[i - width + 1] # remove score from beyond the tail of the window
             if not calls[i + 1] and sum + scores[i + 1] > width * 100:  # check
                 calls[i + 1] = True
         else:  # no call, reset sum
@@ -178,8 +184,13 @@ prot = sequence.readFastaFile('prot2.fa', symbol.Protein_Alphabet)
 # read the secondary structure data for the proteins above (indices should agree)
 sstr = sequence.readFastaFile('sstr3.fa', symbol.DSSP3_Alphabet)
 
-# prot = [sequence.Sequence('PNKRKGFSEGLWEIENNPTVKASGY', symbol.Protein_Alphabet, '2NLU_r76')]
-# sstr = [sequence.Sequence('CCCCHHHHHHHHHHHCCCCCCCCCC', symbol.DSSP3_Alphabet, '2NLU_s76')]
+#prot = [sequence.Sequence('PNKRKGFSEGLWEIENNPTVKASGY', symbol.Protein_Alphabet, '2NLU_r76')]
+#sstr = [sequence.Sequence('CCCCHHHHHHHHHHHCCCCCCCCCC', symbol.DSSP3_Alphabet, '2NLU_s76')]
+
+#prot = [sequence.Sequence("SEQSICQARAAVMVYDDANKKWVPAGGSTGFSRVHIYHHTGNNTFRVVGRKIQDHQVVIN" +\
+#    "CAIPKGLKYNQATQTFHQWRDARQVYGLNFGSKEDANVFASAMMHALEVLN", symbol.Protein_Alphabet, "1EVH")]
+#sstr = [sequence.Sequence("CEEEEEEEEEEEEEEECCCCEEEEHHHCCCCEEEEEEEECCCCEEEEEEEECCCCCEEEEEEE" +\
+#    "CCCCCCECCCCCEEEEECCCCEEEEEECCHHHHHHHHHHHHHHHHHHC", symbol.DSSP3_Alphabet, "1EVH")]
 
 tp = 0  # number of true positives (correctly identified calls)
 tn = 0  # number of true negatives (correctly missed no-calls)
@@ -192,7 +203,7 @@ for index in range(len(prot)):
     mysstr = sstr[index]
     myalpha = [sym == 'H' for sym in sstr[index]]
     mybeta = [sym == 'E' for sym in sstr[index]]
-    myprol = [sym == 'P' for sym in prot[index]]
+    prolines = [sym == 'P' for sym in prot[index]]
 
     """
      1. Assign all of the residues in the peptide the appropriate set of parameters.
@@ -212,8 +223,12 @@ for index in range(len(prot)):
      3. Repeat this procedure to locate all of the helical regions in the sequence.
     """
     calls_a1 = markCountAbove(alpha, width=6, call_cnt=4)
-    calls_a2 = extendDownstream(alpha, calls_a1, width=4)
+    calls_a2 = extendDownstream(alpha, calls_a1, prolines, width=4, alpha=True)
     calls_a3 = extendUpstream(alpha, calls_a2, width=4)
+    
+#    print calls_a1
+#    print calls_a2
+#    print calls_a3
     
     """ 
      4. Scan through the peptide and identify a region where 3 out of 5 of the residues have a value of P(b-sheet) > 100. 
@@ -224,7 +239,7 @@ for index in range(len(prot)):
         if the average P(b-sheet) > 105 and the average P(b-sheet) > P(a-helix) for that region.
     """
     calls_b1 = markCountAbove(beta, width=5, call_cnt=3)
-    calls_b2 = extendDownstream(beta, calls_b1, width=4)
+    calls_b2 = extendDownstream(beta, calls_b1, prolines, width=4, alpha=False)
     calls_b3 = extendUpstream(beta, calls_b2, width=4)
     
     """
@@ -271,19 +286,30 @@ for index in range(len(prot)):
 
 
 ####### Accuracy calculations (Q8) #######
-print "TP = %d" % tp
-print "TN = %d" % tn
-print "FP = %d" % fp
-print "FN = %d" % fn
-print "Accuracy = %d%%" % ((tp + tn) * 100 / (tp + tn + fp + fn))
+print "True  Positive = %d" % tp
+print "True  Negative = %d" % tn
+print "False Positive = %d" % fp
+print "False Negative = %d" % fn
+print "Accuracy = %.2f%%" % (float(tp + tn) * 100 / (tp + tn + fp + fn))
 
-# print myprot
-# print mysstr
-# print 'P(Helix):', makesstr(calls_a4, 'H')
-# print 'P(Sheet):', makesstr(calls_b4, 'E')
+#print myprot
+#print mysstr
+#print 'P(Helix):', makesstr(calls_a4, 'H')
+#print 'P(Sheet):', makesstr(calls_b4, 'E')
 
 # TP = 225129
 # TN = 538644
 # FP = 373739
 # FN = 152288
-# Accuracy = 59%
+# Accuracy = 59.22%
+
+# implementation 1: 59.53
+
+# implementation 2
+#True  Positive = 225524
+#True  Negative = 542323
+#False Positive = 370060
+#False Negative = 151893
+#Accuracy = 59.53%
+
+
