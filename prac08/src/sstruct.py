@@ -79,20 +79,24 @@ def markAvgAbove(scores, width=4, call_avg=100.0):
                 above[j] = True 
     return above
 
-def extendDownstream(scores, calls, prolines, width=4, alpha=True):
-    """ Create a list of booleans that mark all positions that are contained 
+def extendDownstream9(scores, calls, prolines, width=4, alpha=True):
+    """ Question 9 implementation
+        Create a list of booleans that mark all positions that are contained 
         in supplied calls list AND extend this list downstream containing a 
         specified width average of 100. 
-        prolines is the list of prolines
+        prolines: the list of prolines
+        alpha: True iff we are extending for alpha helices
     """
     sum = 0.0
     order = range(0, len(calls) - 1, +1)  # we are extending calls downstream
     cnt = 0
     for i in order:  # extend to the right
-        # proline
+        # proline handling
+        # if we are dealing with alpha helix detection and proline is detected
+        # 5 residues ahead then we clear all alpha helices between here and the
+        # the proline; ie. set to False 
         if alpha and i < (len(calls) - 5) and prolines[i + 5]:
-            for j in range(0, 6):
-                calls[i + j] = False
+            for j in range(0, 6): calls[i + j] = False
             cnt = 0
             sum = 0.0
         if calls[i]:  # to extend a call is required in the first place
@@ -106,6 +110,29 @@ def extendDownstream(scores, calls, prolines, width=4, alpha=True):
             cnt = 0
             sum = 0.0
     return calls
+
+def extendDownstream(scores, calls, width=4):
+    """ Create a list of booleans that mark all positions that are contained 
+        in supplied calls list AND extend this list downstream containing a 
+        specified width average of 100. 
+        prolines is the list of prolines
+    """
+    sum = 0.0
+    order = range(0, len(calls) - 1, +1)  # we are extending calls downstream
+    cnt = 0
+    for i in order:  # extend to the right
+        if calls[i]:  # to extend a call is required in the first place
+            cnt += 1
+            sum += scores[i]  # keep a sum to be able to average
+            if cnt >= width:  # only average over a width
+                sum -= scores[i - width + 1] # remove score from beyond the tail of the window
+            if not calls[i + 1] and sum + scores[i + 1] > width * 100:  # check
+                calls[i + 1] = True
+        else:  # no call, reset sum
+            cnt = 0
+            sum = 0.0
+    return calls
+
 
 def extendUpstream(scores, calls, width=4):
     """ Create a list of booleans that mark all positions that are contained in supplied calls list
@@ -223,7 +250,7 @@ for index in range(len(prot)):
      3. Repeat this procedure to locate all of the helical regions in the sequence.
     """
     calls_a1 = markCountAbove(alpha, width=6, call_cnt=4)
-    calls_a2 = extendDownstream(alpha, calls_a1, prolines, width=4, alpha=True)
+    calls_a2 = extendDownstream9(alpha, calls_a1, prolines, width=4, alpha=True)
     calls_a3 = extendUpstream(alpha, calls_a2, width=4)
     
 #    print calls_a1
@@ -239,7 +266,7 @@ for index in range(len(prot)):
         if the average P(b-sheet) > 105 and the average P(b-sheet) > P(a-helix) for that region.
     """
     calls_b1 = markCountAbove(beta, width=5, call_cnt=3)
-    calls_b2 = extendDownstream(beta, calls_b1, prolines, width=4, alpha=False)
+    calls_b2 = extendDownstream9(beta, calls_b1, prolines, width=4, alpha=False)
     calls_b3 = extendUpstream(beta, calls_b2, width=4)
     
     """
@@ -283,33 +310,10 @@ for index in range(len(prot)):
                 fp += 1
         i += 1
 
-
-
 ####### Accuracy calculations (Q8) #######
 print "True  Positive = %d" % tp
 print "True  Negative = %d" % tn
 print "False Positive = %d" % fp
 print "False Negative = %d" % fn
 print "Accuracy = %.2f%%" % (float(tp + tn) * 100 / (tp + tn + fp + fn))
-
-#print myprot
-#print mysstr
-#print 'P(Helix):', makesstr(calls_a4, 'H')
-#print 'P(Sheet):', makesstr(calls_b4, 'E')
-
-# TP = 225129
-# TN = 538644
-# FP = 373739
-# FN = 152288
-# Accuracy = 59.22%
-
-# implementation 1: 59.53
-
-# implementation 2
-#True  Positive = 225524
-#True  Negative = 542323
-#False Positive = 370060
-#False Negative = 151893
-#Accuracy = 59.53%
-
 

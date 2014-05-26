@@ -52,11 +52,21 @@ calls_b4 = checkSupport(calls_b3, diff_b)
 
 # print the sequence, structure from file and calculated alpha helix
 # and beta sheet structures
-print " ", protein
-print " ", structure
-print " alpha:", makesstr(calls_a4, 'H')
-print "  beta:", makesstr(calls_b4, 'E')
-
+print "    ", protein
+print "    ", structure
+alpha_string = makesstr(calls_a4, 'H')
+beta_string = makesstr(calls_b4, 'E')
+# create a combined string
+combined_string = ""
+for i in range(0, len(alpha_string)):
+    if beta_string[i] == 'E':
+        combined_string += 'E'
+    else:
+        combined_string += alpha_string[i]
+        
+print " alpha:   ", alpha_string
+print "  beta:   ", beta_string
+print "Combined: ", combined_string
 # to check the accuracy we simply compare our prediction to the one 
 # obtained from sstr3.fa
 
@@ -72,4 +82,4 @@ for element in structure.sequence:
     position += 1
         
 print position, " structures with ", match_count, " correctly matched."
-print "Accuracy %d%%" % ((float(match_count) /  position) * 100)
+print "Accuracy %.2f%%" % ((float(match_count) /  position) * 100)

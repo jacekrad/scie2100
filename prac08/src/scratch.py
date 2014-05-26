@@ -20,11 +20,11 @@ alpha = getScores(myprot, 0)
 beta = getScores(myprot, 1)
 
 calls_a1 = markCountAbove(alpha, width = 6, call_cnt = 4)
-calls_a2 = extendDownstream(alpha, calls_a1, width = 4)
+calls_a2 = extendDownstream9(alpha, calls_a1, width = 4)
 calls_a3 = extendUpstream(alpha, calls_a2, width = 4)
 
 calls_b1 = markCountAbove(beta, width = 5, call_cnt = 3)
-calls_b2 = extendDownstream(beta, calls_b1, width = 4)
+calls_b2 = extendDownstream9(beta, calls_b1, width = 4)
 calls_b3 = extendUpstream(beta, calls_b2, width = 4)
 
 avg_a = calcRegionAverage(alpha, calls_a3)
