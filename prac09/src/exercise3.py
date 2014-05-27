@@ -7,7 +7,10 @@ from sequence import *
 
 z = readMultiCount("abf1.jaspar")
 pwm = PWM(z)
-
+letters = ['A', 'C', 'G', 'T']
 print pwm
 
-# print 10'th column
+print "PWM 10'th column"
+for i in range(0, 4):
+    print letters[i], pwm.m[i][9]
+

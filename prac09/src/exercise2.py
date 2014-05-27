@@ -7,5 +7,4 @@ from sequence import *
 
 promoters = readFastaFile("yeast_promoters.fa", DNA_Alphabet)
 
-print len(promoters), " promoters"
-# http://rulai.cshl.edu/SCPD/
+print "There are", len(promoters), "promoters"

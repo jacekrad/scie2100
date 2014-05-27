@@ -24,20 +24,22 @@ plt.show()
 result = sorted(meanfold.items(), key=lambda v: v[1])
 print '========== Wildtype may down-regulate =========='
 for r in result[0:100]:
-    print r[0], r[1]
+    if not(' ' in r[0]):
+        print r[0], r[1]
 print '========== Wildtype may up-regulate =========='
 for r in result[-1:-100:-1]:
-    print r[0], r[1]
+    if not(' ' in r[0]):
+        print r[0], r[1]
     
     
 # question 8
 
-result = sorted(meanfold.items(), key=lambda v: v[1])
-print '========== Wildtype may down-regulate =========='
-for r in result[0:100]:
-    if len(r[0]) < 10:
-        print r[0]
-print '========== Wildtype may up-regulate =========='
-for r in result[-1:-100:-1]:
-    if len(r[0]) < 10:
-        print r[0]
+# result = sorted(meanfold.items(), key=lambda v: v[1])
+# print '========== Wildtype may down-regulate =========='
+# for r in result[0:100]:
+#     if len(r[0]) < 10:
+#         print r[0]
+# print '========== Wildtype may up-regulate =========='
+# for r in result[-1:-100:-1]:
+#     if len(r[0]) < 10:
+#         print r[0]
