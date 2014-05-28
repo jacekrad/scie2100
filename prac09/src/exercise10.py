@@ -4,6 +4,7 @@ Created on 27/05/2014
 @author: s4361277
 '''
 from sequence import *
+from go import *
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -14,20 +15,25 @@ abf1_pwm = PWM(z)
 
 
 bind_map = {}
-for s in yeast_prom: #yeast_prom is an array of sequences
+for s in yeast_prom:  # yeast_prom is an array of sequences
     if abf1_pwm.maxscore(s)[0] > -24 and abf1_pwm.maxscore(s)[0] < -23.4:
-        bind_map[s.name] = abf1_pwm.maxscore(s)[0] # save score only
+        bind_map[s.name] = abf1_pwm.maxscore(s)[0]  # save score only
 scores = []
 for s in bind_map.keys():
     if bind_map[s] != None:
         scores.append(bind_map[s])
 print len(scores), " scrores"
 
-hist, bins = np.histogram(scores, bins=50)
-width = 0.7 * (bins[1] - bins[0])
-center = (bins[:-1] + bins[1:]) / 2
-plt.bar(center, hist, align='center', width=width)
-plt.show()
+# hist, bins = np.histogram(scores, bins=50)
+# width = 0.7 * (bins[1] - bins[0])
+# center = (bins[:-1] + bins[1:]) / 2
+# plt.bar(center, hist, align='center', width=width)
+# plt.show()
 
 print len(bind_map.keys())
 # provide gene list from bind_map
+
+godb = GODB("yeast_go")
+
+r = godb.get_GO_term_overrepresentation(bind_map.keys(), evalThreshold=1.0)
+print "r=", r

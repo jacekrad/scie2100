@@ -7,6 +7,7 @@ from sequence import *
 import genome as ge
 import matplotlib.pyplot as plt
 import numpy as np
+from go import *
 
 g = ge.readGEOFile('GDS3198.soft', id_column = 1)
 meanfold = {}
@@ -27,8 +28,10 @@ plt.show()
 result = sorted(meanfold.items(), key=lambda v: v[1])
 print '========== Wildtype may down-regulate =========='
 c = 0
+l = []
 for r in result[0:100]:
     if not(' ' in r[0]):
+        l.append(r[0])
         print r[0], r[1]
         c +=1
 print c
@@ -36,10 +39,16 @@ c = 0
 print '========== Wildtype may up-regulate =========='
 for r in result[-1:-100:-1]:
     if not(' ' in r[0]):
+        l.append(r[0])
         print r[0], r[1]
         c += 1
     
 print c
+
+godb = GODB("yeast_go")
+r = godb.get_GO_term_overrepresentation(l, evalThreshold=1.0)
+print "r=", r
+
 # question 8
 
 # result = sorted(meanfold.items(), key=lambda v: v[1])
