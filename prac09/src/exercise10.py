@@ -22,18 +22,7 @@ scores = []
 for s in bind_map.keys():
     if bind_map[s] != None:
         scores.append(bind_map[s])
-print len(scores), " scrores"
-
-# hist, bins = np.histogram(scores, bins=50)
-# width = 0.7 * (bins[1] - bins[0])
-# center = (bins[:-1] + bins[1:]) / 2
-# plt.bar(center, hist, align='center', width=width)
-# plt.show()
-
-print len(bind_map.keys())
-# provide gene list from bind_map
 
 godb = GODB("yeast_go")
-
 r = godb.get_GO_term_overrepresentation(bind_map.keys(), evalThreshold=1.0)
 print "r=", r

@@ -8,14 +8,13 @@ import genome as ge
 import matplotlib.pyplot as plt
 import numpy as np
 
-g = ge.readGEOFile('GDS3198.soft', id_column = 1)
+g = ge.readGEOFile('GDS3198.soft', id_column=1)
 meanfold = {}
 for gene in g.genes:
     profile = g.getGenes(gene)
-    meanfold[gene] = (math.log(profile[0] / profile[3]) +
+    meanfold[gene] = (math.log(profile[0] / profile[3]) + 
                       math.log(profile[1] / profile[4]) + 
                       math.log(profile[2] / profile[5])) / 3
-    print meanfold[gene]
 
 # pull out NaNs
 scores = [y for y in meanfold.values() if not np.isnan(y)]
@@ -23,31 +22,13 @@ hist, bins = np.histogram(scores, bins=50)
 width = 0.7 * (bins[1] - bins[0])
 center = (bins[:-1] + bins[1:]) / 2
 plt.bar(center, hist, align='center', width=width)
+plt.title("Question 7")
 plt.show()
 result = sorted(meanfold.items(), key=lambda v: v[1])
 print '========== Wildtype may down-regulate =========='
-c = 0
 for r in result[0:100]:
-    if not(' ' in r[0]):
         print r[0], r[1]
-        c +=1
-print c
-c = 0
+
 print '========== Wildtype may up-regulate =========='
 for r in result[-1:-100:-1]:
-    if not(' ' in r[0]):
         print r[0], r[1]
-        c += 1
-    
-print c
-# question 8
-
-# result = sorted(meanfold.items(), key=lambda v: v[1])
-# print '========== Wildtype may down-regulate =========='
-# for r in result[0:100]:
-#     if len(r[0]) < 10:
-#         print r[0]
-# print '========== Wildtype may up-regulate =========='
-# for r in result[-1:-100:-1]:
-#     if len(r[0]) < 10:
-#         print r[0]

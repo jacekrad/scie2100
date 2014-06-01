@@ -21,13 +21,14 @@ scores = []
 for s in bind_map.keys():
     if bind_map[s] != None:
         scores.append(bind_map[s])
-print len(scores), " scrores"
 
 hist, bins = np.histogram(scores, bins=50)
 width = 0.7 * (bins[1] - bins[0])
 center = (bins[:-1] + bins[1:]) / 2
 plt.bar(center, hist, align='center', width=width)
-plt.show()
+plt.title("Question 5")
 
-print len(bind_map.keys())
-# provide gene list from bind_map
+print len(bind_map.keys()), "genes:"
+for key in bind_map.keys(): print key
+
+plt.show()
