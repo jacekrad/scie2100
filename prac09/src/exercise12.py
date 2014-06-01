@@ -29,5 +29,7 @@ for r in result[-1:-100:-1]:
 godb = GODB("yeast_go")
 r = godb.get_GO_term_overrepresentation(genes, evalThreshold=1.0)
 print "GO terms:"
-for term in r: print term
+
+for term in r:
+    print godb.get_GO_description(term)
 
