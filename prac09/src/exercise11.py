@@ -16,18 +16,18 @@ for gene in g.genes:
                       math.log(profile[2] / profile[5])) / 3
 
 result = sorted(meanfold.items(), key=lambda v: v[1])
-l = []
+genes = []
 
 for r in result[0:100]:
     if not(' ' in r[0]) and len(search(r[0], dbName='uniprot', format='list', limit=1)) == 1:
-        l.append(r[0])
+        genes.append(r[0])
 
 for r in result[-1:-100:-1]:
     if not(' ' in r[0]) and len(search(r[0], dbName='uniprot', format='list', limit=1)) == 1:
-        l.append(r[0])
+        genes.append(r[0])
 
 godb = GODB("yeast_go")
-print l
-r = godb.get_GO_term_overrepresentation(l, evalThreshold=1.0)
+r = godb.get_GO_term_overrepresentation(genes, evalThreshold=1.0)
+print "GO terms:"
 for item in r: print item
 
