@@ -28,7 +28,7 @@ if a>10:
 else:
     button.config(text='NOT greater than 10')
     
-#top.mainloop()
+top.mainloop()
 
 #====================================================================
 # defines an alphabet of symbols
