@@ -31,7 +31,7 @@ print "JX416721_1 = ", len(JX416721_1)
 
 for matrix in matrices:
     print "processing matrix:", matrix.name
-    for gap_penalty in range(-7, -10, -1):
+    for gap_penalty in range(-1, -20, -1):
         local_alignments.add_alignment(alignLocal(HQ659871_1, JX416721_1, matrix, gap_penalty))
         global_alignments.add_alignment(alignGlobal(HQ659871_1, JX416721_1, matrix, gap_penalty))
     

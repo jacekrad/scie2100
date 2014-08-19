@@ -27,6 +27,7 @@ class AlignmentCollection():
     def add_alignment(self, alignment):
         """ append an alignment to this collection """
         self.alignments.append(alignment)
+        alignment.writeHTML(self.name + "_" + alignment.matrix_name + "_penalty_" + str(alignment.gap_penalty) + ".html")
         
     def toXML(self, reading_frame = 0):
         """ return XML representation of this collection of alignments """
